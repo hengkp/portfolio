@@ -64,7 +64,9 @@
     --font-xl: clamp(1.25rem, 3.5vw, 1.5rem);
     --font-2xl: clamp(1.5rem, 4vw, 2rem);
     --font-3xl: clamp(2rem, 5vw, 2.5rem);
-    --dark-bg: #0a0f1d;
+
+    /* Dark theme colors */
+    --dark-bg: #0f172a;
     --dark-card-bg: #1e293b;
     --dark-text: #e2e8f0;
     --dark-text-light: #94a3b8;
@@ -91,6 +93,11 @@ body {
     max-width: 1200px;
     margin: 0 auto;
     padding: 0 var(--spacing);
+}
+
+/* Add smooth transitions for spacing changes */
+.container>* {
+    transition: padding var(--transition), margin var(--transition);
 }
 
 /* Navbar styles */
@@ -168,6 +175,67 @@ body {
     transition: var(--transition);
 }
 
+
+/* Update navigation icons with section colors */
+.nav-links a[href="#home"] i {
+    color: var(--home-color);
+}
+
+.nav-links a[href="#about"] i {
+    color: var(--about-color);
+}
+
+.nav-links a[href="#experience"] i {
+    color: var(--experience-color);
+}
+
+.nav-links a[href="#publications"] i {
+    color: var(--publications-color);
+}
+
+.nav-links a[href="#education"] i {
+    color: var(--education-color);
+}
+
+.nav-links a[href="#skills"] i {
+    color: var(--skills-color);
+}
+
+.nav-links a[href="#certificates"] i {
+    color: var(--certificates-color);
+}
+
+/* Navigation panel enhancements */
+.nav-links a {
+    font-size: var(--font-sm);
+    padding: clamp(0.5rem, 1.5vw, 1rem);
+}
+
+.nav-links a.active {
+    color: white;
+    background: var(--gradient-1);
+}
+
+.nav-links a:hover {
+    transform: perspective();
+}
+
+/* Enhanced hover effects for navigation */
+.nav-links a:hover i {
+    transform: scale(1.2);
+    transition: ease-in-out;
+}
+
+/* Navigation spacing */
+.nav-links {
+    gap: var(--item-spacing);
+}
+
+.nav-links a {
+    padding: 0.5rem 1rem;
+    /* Slightly reduced padding */
+}
+
 /* Hero section */
 .hero {
     padding: calc(var(--section-spacing) + 40px) 0 var(--section-spacing);
@@ -180,13 +248,29 @@ body {
 .hero::before {
     content: '';
     position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
     bottom: 0;
-    background: url('assets/grid.svg') center/cover;
+    left: 0;
+    width: 200px;
+    height: 200px;
+    background: var(--gradient-1);
     opacity: 0.1;
-    z-index: 0;
+    border-radius: 50%;
+    filter: blur(60px);
+    z-index: -1;
+}
+
+.hero::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 300px;
+    height: 300px;
+    background: var(--gradient-2);
+    opacity: 0.1;
+    border-radius: 50%;
+    filter: blur(80px);
+    z-index: -1;
 }
 
 .hero h1 {
@@ -230,6 +314,21 @@ body {
     transform: translateY(-2px);
     box-shadow: var(--hover-shadow);
     background: var(--gradient-2);
+}
+
+/* Location link style */
+.contact-info a[href*="maps"] {
+    color: var(--text-color);
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: var(--transition);
+}
+
+.contact-info a[href*="maps"]:hover {
+    color: var(--primary-color);
+    transform: translateY(-2px);
 }
 
 /* Timeline styles */
@@ -462,12 +561,6 @@ section {
     position: relative;
 }
 
-/* Hero section specific spacing */
-.hero {
-    padding: calc(var(--section-spacing) + 40px) 0 var(--section-spacing);
-    /* Extra top padding for navbar */
-}
-
 /* Content spacing adjustments */
 .about-content {
     gap: var(--section-inner-spacing);
@@ -513,24 +606,6 @@ section h2::after {
     margin-top: var(--item-spacing);
 }
 
-/* Navigation spacing */
-.nav-links {
-    gap: var(--item-spacing);
-}
-
-.nav-links a {
-    padding: 0.5rem 1rem;
-    /* Slightly reduced padding */
-}
-
-/* Contact info spacing */
-.contact-info {
-    gap: 1rem;
-    margin-top: 2rem;
-    flex-wrap: wrap;
-    justify-content: center;
-}
-
 /* Interest items spacing */
 .interest-items {
     gap: 0.75rem;
@@ -539,11 +614,6 @@ section h2::after {
 }
 
 
-
-/* Add smooth transitions for spacing changes */
-.container>* {
-    transition: padding var(--transition), margin var(--transition);
-}
 
 /* Ensure consistent card styling */
 .timeline-item,
@@ -653,34 +723,6 @@ section h2::after {
     box-shadow: var(--card-shadow);
 }
 
-/* Add decorative elements */
-.hero::after {
-    content: '';
-    position: absolute;
-    top: 0;
-    right: 0;
-    width: 300px;
-    height: 300px;
-    background: var(--gradient-2);
-    opacity: 0.1;
-    border-radius: 50%;
-    filter: blur(80px);
-    z-index: -1;
-}
-
-.hero::before {
-    content: '';
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    width: 200px;
-    height: 200px;
-    background: var(--gradient-1);
-    opacity: 0.1;
-    border-radius: 50%;
-    filter: blur(60px);
-    z-index: -1;
-}
 
 /* Add subtle animations */
 .skill-tags span,
@@ -702,79 +744,11 @@ section h2::after {
     }
 }
 
-/* Update navigation icons with section colors */
-.nav-links a[href="#home"] i {
-    color: var(--home-color);
-}
-
-.nav-links a[href="#about"] i {
-    color: var(--about-color);
-}
-
-.nav-links a[href="#experience"] i {
-    color: var(--experience-color);
-}
-
-.nav-links a[href="#publications"] i {
-    color: var(--publications-color);
-}
-
-.nav-links a[href="#education"] i {
-    color: var(--education-color);
-}
-
-.nav-links a[href="#skills"] i {
-    color: var(--skills-color);
-}
-
-.nav-links a[href="#certificates"] i {
-    color: var(--certificates-color);
-}
 
 /* Section padding adjustments */
 section {
     padding: clamp(3rem, 8vh, 6rem) 0;
     margin: 0;
-    position: relative;
-}
-
-/* Container padding adjustments */
-.container {
-    padding: 0 clamp(1rem, 5vw, 3rem);
-}
-
-/* Card and content spacing */
-.timeline-item,
-.publication-item,
-.education-item,
-.cert-item {
-    padding: clamp(1rem, 3vw, 2rem);
-    margin-bottom: clamp(1rem, 2vw, 1.5rem);
-}
-
-/* Navigation panel enhancements */
-.nav-links a {
-    font-size: var(--font-sm);
-    padding: clamp(0.5rem, 1.5vw, 1rem);
-}
-
-.nav-links a.active {
-    color: white;
-    background: var(--gradient-1);
-}
-
-.nav-links a:hover {
-    transform: translateX(5px);
-}
-
-/* Enhanced hover effects for navigation */
-.nav-links a:hover i {
-    transform: scale(1.2);
-    transition: transform 0.3s ease;
-}
-
-/* Section transitions */
-section {
     position: relative;
     overflow: hidden;
 }
@@ -791,12 +765,6 @@ section::after {
             currentColor 50%,
             transparent 100%);
     opacity: 0.1;
-}
-
-/* Update skill tags with section color */
-.skill-tags span {
-    font-size: var(--font-xs);
-    padding: 0.5rem 1rem;
 }
 
 /* Enhance section headers */
@@ -816,6 +784,45 @@ section h2::after {
     background: currentColor;
     opacity: 0.2;
 }
+
+
+/* Card and content spacing */
+.timeline-item,
+.publication-item,
+.education-item,
+.cert-item {
+    padding: clamp(1rem, 3vw, 2rem);
+    margin-bottom: clamp(1rem, 2vw, 1.5rem);
+}
+
+
+/* Update skill tags with section color */
+.skill-tags span {
+    font-size: var(--font-xs);
+    padding: 0.5rem 1rem;
+}
+
+/* Theme toggle button styles */
+.theme-toggle {
+    position: fixed;
+    top: 2rem;
+    left: 2rem;
+    /* Position on left side */
+    width: 3rem;
+    height: 3rem;
+    border: none;
+    border-radius: 50%;
+    background: var(--gradient-1);
+    box-shadow: var(--card-shadow);
+    cursor: pointer;
+    z-index: 1000;
+    transition: var(--transition);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+
 
 /* Theme toggle button styles */
 .theme-toggle {
@@ -949,56 +956,6 @@ section h2::after {
 
 [data-theme="dark"] #certificates {
     background: #1a2824;
-}
-
-/* Update theme toggle and dark mode styles */
-:root {
-    /* ... existing variables ... */
-
-    /* Dark theme colors */
-    --dark-bg: #0f172a;
-    --dark-card-bg: #1e293b;
-    --dark-text: #e2e8f0;
-    --dark-text-light: #94a3b8;
-    --dark-border: #334155;
-    --dark-hover: #2d3748;
-    --dark-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2);
-}
-
-/* Theme toggle button styles */
-.theme-toggle {
-    position: fixed;
-    top: 2rem;
-    left: 2rem;
-    /* Position on left side */
-    width: 3rem;
-    height: 3rem;
-    border: none;
-    border-radius: 50%;
-    background: var(--gradient-1);
-    box-shadow: var(--card-shadow);
-    cursor: pointer;
-    z-index: 1000;
-    transition: var(--transition);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    overflow: hidden;
-}
-
-.theme-toggle i {
-    position: absolute;
-    font-size: 1.2rem;
-    color: white;
-    transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.theme-toggle .fa-sun {
-    transform: translateY(0) rotate(0deg);
-}
-
-.theme-toggle .fa-moon {
-    transform: translateY(100%) rotate(-90deg);
 }
 
 [data-theme="dark"] .theme-toggle {
@@ -1235,20 +1192,6 @@ section h2::after {
     margin-bottom: 1rem;
 }
 
-/* Location link style */
-.contact-info a[href*="maps"] {
-    color: var(--text-color);
-    text-decoration: none;
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    transition: var(--transition);
-}
-
-.contact-info a[href*="maps"]:hover {
-    color: var(--primary-color);
-    transform: translateY(-2px);
-}
 
 /* Publication, Experience, and Education cards consistent width */
 .publication-list,
