@@ -88,9 +88,13 @@
 
     var lut = null;            // samples from getPointAtLength: x, y, angle, turn rate
     var STEP = 4;              // px of path length between samples
-    var size = 104, vh = 0, docH = 0, trailLen = 0;
-    var cur = -1, target = 0, raf = 0, idleTimer = 0;
+    var size = 104, vh = 0, docH = 0, trailLen = 0, scrollNow = 0;
+    // shown: the sample index the plane is drawn at. It only ever grows, so the plane never flies backwards.
+    // goal: where the scroll position wants it. vel: smoothed speed in samples per frame.
+    var shown = -1, goal = 0, vel = 0, raf = 0, settled = true;
     var face = 1, flip = 1, pose = "level";   // face: +1 nose right, -1 nose left; flip eases between them
+    var heading = 0, headingSet = false;      // eased tangent angle in degrees
+    var wind = box.querySelector(".wind");
 
     function contentEdges() {
       var w = document.querySelector("main .wrap");
@@ -229,7 +233,11 @@
       return "level";
     }
 
-    function place(f, instant) {
+    function shortest(deg) { return ((deg + 540) % 360) - 180; }
+
+    // Draw the plane at sample index f. speed is samples per frame (sets the wind streaks).
+    // Returns true while the heading or the mirror flip is still easing, so the loop keeps running.
+    function place(f, speed, instant) {
       var i = Math.max(0, Math.min(lut.n - 1, f)), k = Math.floor(i), t = i - k, k2 = Math.min(lut.n - 1, k + 1);
       var x = lut.x[k] + (lut.x[k2] - lut.x[k]) * t, y = lut.y[k] + (lut.y[k2] - lut.y[k]) * t;
       var a1 = lut.a[k], a2 = lut.a[k2], da = Math.atan2(Math.sin(a2 - a1), Math.cos(a2 - a1));
@@ -239,35 +247,75 @@
       if (c > 0.3) face = 1; else if (c < -0.3) face = -1;
       if (instant) flip = face;
       else if (flip !== face) flip = face > flip ? Math.min(face, flip + 0.16) : Math.max(face, flip - 0.16);
+      // the tangent angle is eased along the shortest arc; the mirror flip handles the 180deg turn
+      var dh = shortest(ang - heading);
+      if (instant || !headingSet) { heading = ang; headingSet = true; dh = 0; }
+      else { heading += dh * 0.18; }
+      heading = shortest(heading);
       // a mirrored sprite has its nose at 180deg, so it turns 180deg less; at flip ~ 0 it is edge-on, a banked turn
-      var r = flip >= 0 ? ang : ang - 180;
+      var r = flip >= 0 ? heading : heading - 180;
       var pitch = face > 0 ? ang : 180 - ang;
-      pitch = Math.atan2(Math.sin(pitch * Math.PI / 180), Math.cos(pitch * Math.PI / 180)) * 180 / Math.PI;
+      pitch = shortest(pitch);
       var p = poseFor(pitch, face * (lut.k[k] + (lut.k[k2] - lut.k[k]) * t));
       if (p !== pose) { pose = p; plane.setAttribute("data-pose", p); }
       var h = size * ASPECT;
-      plane.style.transform = "translate3d(" + (x - size / 2).toFixed(1) + "px," + (y - h / 2).toFixed(1) + "px,0)";
-      rot.style.transform = "rotate(" + r.toFixed(1) + "deg) scaleX(" + (Math.max(0.02, Math.abs(flip)) * (flip >= 0 ? 1 : -1)).toFixed(3) + ")";
+      var sx = Math.max(0.02, Math.abs(flip)) * (flip >= 0 ? 1 : -1);
+      plane.style.transform = "translate3d(" + (x - size / 2).toFixed(1) + "px," + (y - h / 2).toFixed(1) + "px,0) rotate(" + r.toFixed(2) + "deg) scaleX(" + sx.toFixed(3) + ")";
+      if (wind) {
+        // streaks trail the tail and stretch with speed: gone at rest, full at about 14 px per frame
+        var s = Math.max(0, Math.min(1, speed * STEP / 14));
+        wind.style.opacity = (s * 0.85).toFixed(3);
+        wind.style.transform = "scaleX(" + (0.3 + 0.7 * s).toFixed(3) + ")";
+      }
       win.setAttribute("transform", "translate(0 " + (y - trailLen).toFixed(1) + ")");
+      return Math.abs(dh) > 0.4 || flip !== face;
     }
 
-    function targetFor() { return lenForY(window.scrollY + vh * 0.55); }
-
-    function tick() {
+    var lastTs = 0;
+    function tick(ts) {
       raf = 0;
-      var diff = target - cur;
-      if (Math.abs(diff) < 0.05 && flip === face) { cur = target; place(cur); return; }
-      cur += diff * 0.14;
-      place(cur);
+      // frame-rate independent: integrate one 60 Hz step per 16.7 ms elapsed (capped), so 120 Hz screens and throttled tabs glide alike
+      var steps = lastTs ? Math.max(1, Math.min(8, Math.round((ts - lastTs) / 16.7))) : 1;
+      lastTs = ts;
+      for (var i = 0; i < steps; i++) {
+        var diff = goal - shown;
+        // critically damped glide: the velocity carries the plane to a soft stop, never past the goal and never backwards
+        vel = vel * 0.5 + diff * 0.1;
+        if (vel < 0) vel = 0;
+        shown += vel;
+        if (shown > goal) { shown = goal; vel = 0; }
+      }
+      var easing = place(shown, vel);
+      if (goal - shown < 0.5 && vel < 0.1 && !easing) {
+        shown = goal; vel = 0; place(shown, 0);
+        lastTs = 0;
+        if (!settled) { settled = true; plane.classList.add("idle"); }
+        return;
+      }
       raf = requestAnimationFrame(tick);
+    }
+
+    // Jump to the path point just above the viewport, so the plane re-enters from the top edge and glides forward.
+    function reenter(g) {
+      shown = Math.max(0, Math.min(g, lenForY(scrollNow - size)));
+      vel = 0;
+      place(shown, 0, true);
     }
 
     function onScroll() {
       if (!lut || reduce.matches) return;
-      target = targetFor();
-      plane.classList.remove("idle");
-      clearTimeout(idleTimer);
-      idleTimer = setTimeout(function () { plane.classList.add("idle"); }, 220);
+      scrollNow = window.scrollY;
+      var g = lenForY(scrollNow + vh * 0.55);
+      var py = lut.y[Math.max(0, Math.min(lut.n - 1, Math.round(shown)))] - scrollNow;   // plane y inside the viewport
+      if (g >= shown) {
+        if (py < -vh * 0.6) reenter(g);            // the reader jumped far down: come in from the top edge
+        goal = g;
+      } else if (py > vh - size * 0.3) {
+        reenter(g); goal = g;                      // scrolled up until the plane reached the bottom edge: it comes back in from the top, still flying forward
+      } else {
+        goal = shown;                              // scrolling up: hold position, nose forward, and bob
+      }
+      if (goal > shown + 0.05 && settled) { settled = false; plane.classList.remove("idle"); }
       if (!raf) raf = requestAnimationFrame(tick);
     }
 
@@ -276,14 +324,18 @@
       if (reduce.matches) {
         // still plane near the hero, no trail, no animation
         cancelAnimationFrame(raf); raf = 0;
-        cur = target = lenForY(Math.min(vh * 0.4, 260));
-        place(cur, true);
+        shown = goal = lenForY(Math.min(vh * 0.4, 260));
+        vel = 0;
+        place(shown, 0, true);
         plane.classList.remove("idle");
       } else {
-        target = targetFor();
-        if (cur < 0) { cur = target; place(cur, true); } else { cur = Math.min(cur, lut.n - 1); place(cur); }
+        scrollNow = window.scrollY;
+        goal = lenForY(scrollNow + vh * 0.55);
+        if (shown < 0) { shown = goal; vel = 0; place(shown, 0, true); }
+        else { shown = Math.min(shown, lut.n - 1); if (goal < shown) goal = shown; place(shown, 0); }
+        settled = true;
         plane.classList.add("idle");
-        if (!raf) raf = requestAnimationFrame(tick);
+        onScroll();
       }
       box.classList.add("ready");
     }

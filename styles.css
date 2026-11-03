@@ -185,3 +185,6 @@ a:focus-visible, button:focus-visible { outline-color: var(--g-blue); }
 .theme-btn:hover, .lang-switch button:hover { color: var(--g-blue); border-color: var(--g-blue); }
 .card:hover { border-color: var(--c, var(--g-blue)); }
 .next-grid .card:hover { border-color: var(--ink); border-left-color: var(--c); }
+/* v6 · wind streaks behind the tail; length and opacity follow the plane's speed (set from main.js) */
+.wind { position: absolute; right: 70%; top: 22%; width: 125%; height: 56%; fill: var(--ink); opacity: 0; transform: scaleX(.3); transform-origin: 100% 50%; pointer-events: none; overflow: visible; }
+.plane { transform-origin: 50% 50%; }
