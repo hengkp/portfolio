@@ -76,12 +76,15 @@
     var path = box.querySelector(".trail-path");
     var win = box.querySelector(".trail-window");
     var plane = box.querySelector(".plane");
+    var rot = box.querySelector(".plane-rot");
+    var ASPECT = 105 / 240;     // sprite canvas, see assets/img/plane-*.webp
     var reduce = window.matchMedia("(prefers-reduced-motion: reduce)");
 
-    var lut = null;            // samples from getPointAtLength: x, y, angle
+    var lut = null;            // samples from getPointAtLength: x, y, angle, turn rate
     var STEP = 4;              // px of path length between samples
-    var size = 56, vh = 0, docH = 0, trailLen = 0;
+    var size = 80, vh = 0, docH = 0, trailLen = 0;
     var cur = -1, target = 0, raf = 0, idleTimer = 0;
+    var face = 1, flip = 1, pose = "level";   // face: +1 nose right, -1 nose left; flip eases between them
 
     function contentEdges() {
       var w = document.querySelector("main .wrap");
@@ -91,7 +94,7 @@
       return { W: W, x0: r.left + parseFloat(cs.paddingLeft), x1: r.right - parseFloat(cs.paddingRight) };
     }
 
-    function sectionGaps(minGap) {
+    function sectionGaps(minGap, inset) {
       // vertical bands with no text: bottom padding of one section + top padding of the next
       var secs = Array.prototype.slice.call(document.querySelectorAll("main > section"));
       var gaps = [];
@@ -100,7 +103,7 @@
         var ra = a.getBoundingClientRect(), rb = b.getBoundingClientRect();
         var pa = parseFloat(getComputedStyle(a).paddingBottom), pb = parseFloat(getComputedStyle(b).paddingTop);
         var top = ra.bottom + scrollY - pa, bottom = rb.top + scrollY + pb;
-        if (bottom - top >= minGap) gaps.push({ a: top + 24, b: bottom - 24 });
+        if (bottom - top >= minGap) gaps.push({ a: top + inset, b: bottom - inset });
       }
       return gaps;
     }
@@ -115,14 +118,25 @@
       var bandL = e.x0, bandR = e.W - e.x1;
       var band = Math.min(bandL, bandR);
       var weave = band >= 110;                       // wide screens: swap sides in the gaps between sections
-      size = Math.round(weave ? Math.max(40, Math.min(60, band * 0.5)) : Math.max(20, Math.min(40, bandR * 0.6)));
+      size = Math.round(weave ? Math.max(72, Math.min(88, band * 0.45)) : Math.max(40, Math.min(48, bandR * 1.22)));
       var cL = bandL / 2, cR = e.W - bandR / 2;
       var amp = weave ? band * 0.2 : Math.max(0, (bandR - size) * 0.25);
       var y0 = Math.min(vh * 0.55, 150), y1 = Math.max(y0 + 200, docH - vh * 0.45);
-      var gaps = sectionGaps(weave ? 200 : 150).filter(function (g) { return g.a > y0 + 120 && g.b < y1 - 120; });
+      // keep the turns clear of the last and first lines: half a plane length plus a little air
+      var gaps = sectionGaps(weave ? 200 : 150, 18 + size * 0.5).filter(function (g) { return g.a > y0 + 120 && g.b < y1 - 120; });
       var dip = e.W * 0.42;  // narrow screens: swoop into the empty gap and back to the right edge
-      // start on the right (over the hero image, away from the hero text)
+      // start on the right, in the margin beside the hero type
       function sideX(side, y) { return (side ? cR : cL) + amp * Math.sin(y / 260); }
+      // wide screens: open with a glide across the empty right half of the type-led hero, landing in the right margin
+      var hero = document.querySelector(".hero"), heroRight = 0, heroEnd = 0, xStart = 0;
+      if (weave && hero) {
+        hero.querySelectorAll(".wrap > *").forEach(function (el) {
+          var rg = document.createRange(); rg.selectNodeContents(el);
+          Array.prototype.forEach.call(rg.getClientRects(), function (r) { if (r.width > 0) heroRight = Math.max(heroRight, r.right); });
+        });
+        heroEnd = hero.getBoundingClientRect().bottom + scrollY - 40;
+        xStart = Math.min(cR, Math.max(heroRight + size + 48, (heroRight + cR) / 2));
+      }
       var pts = [], side = 1, gi = 0;
       for (var y = y0; y <= y1 + 0.1; y += 18) {
         var g = gaps[gi];
@@ -132,6 +146,9 @@
           var t = smooth((y - g.a) / (g.b - g.a));
           if (weave) x = sideX(side, g.a) * (1 - t) + sideX(1 - side, g.b) * t;
           else x = sideX(1, y) - (sideX(1, y) - dip) * Math.sin(Math.PI * t);
+        } else if (xStart && y < heroEnd) {
+          var th = smooth((y - y0) / (heroEnd - y0));
+          x = xStart + (sideX(side, y) - xStart) * th;
         } else {
           x = sideX(side, y);
         }
@@ -150,7 +167,7 @@
       svg.setAttribute("viewBox", "0 0 " + e.W + " " + docH);
       path.setAttribute("d", d);
       var L = path.getTotalLength(), n = Math.ceil(L / STEP) + 1;
-      lut = { n: n, L: L, x: new Float32Array(n), y: new Float32Array(n), a: new Float32Array(n) };
+      lut = { n: n, L: L, x: new Float32Array(n), y: new Float32Array(n), a: new Float32Array(n), k: new Float32Array(n) };
       for (var k = 0; k < n; k++) {
         var p = path.getPointAtLength(Math.min(L, k * STEP));
         lut.x[k] = p.x; lut.y[k] = p.y;
@@ -158,6 +175,12 @@
       for (k = 0; k < n; k++) {
         var k0 = Math.max(0, k - 2), k1 = Math.min(n - 1, k + 2);
         lut.a[k] = Math.atan2(lut.y[k1] - lut.y[k0], lut.x[k1] - lut.x[k0]);
+      }
+      for (k = 0; k < n; k++) {
+        // turn rate in degrees per px of path, positive = turning clockwise on screen
+        var j0 = Math.max(0, k - 3), j1 = Math.min(n - 1, k + 3);
+        var dA = Math.atan2(Math.sin(lut.a[j1] - lut.a[j0]), Math.cos(lut.a[j1] - lut.a[j0]));
+        lut.k[k] = j1 > j0 ? dA * 180 / Math.PI / ((j1 - j0) * STEP) : 0;
       }
       trailLen = Math.round(vh * 1.1);
       win.setAttribute("height", trailLen);
@@ -175,12 +198,32 @@
       return lo + (span > 0 ? (y - lut.y[lo]) / span : 0);
     }
 
-    function place(f) {
+    function poseFor(pitch, turn) {
+      // pitch: degrees below the heading's horizon (+ = nose down); turn: + = nose dropping
+      if (turn < -0.12 || pitch < -25) return "up";
+      if (turn > 0.12 || pitch > 40) return "down";
+      return "level";
+    }
+
+    function place(f, instant) {
       var i = Math.max(0, Math.min(lut.n - 1, f)), k = Math.floor(i), t = i - k, k2 = Math.min(lut.n - 1, k + 1);
       var x = lut.x[k] + (lut.x[k2] - lut.x[k]) * t, y = lut.y[k] + (lut.y[k2] - lut.y[k]) * t;
       var a1 = lut.a[k], a2 = lut.a[k2], da = Math.atan2(Math.sin(a2 - a1), Math.cos(a2 - a1));
-      var ang = (a1 + da * t) * 180 / Math.PI;
-      plane.style.transform = "translate3d(" + (x - size / 2).toFixed(1) + "px," + (y - size * 0.375).toFixed(1) + "px,0) rotate(" + ang.toFixed(1) + "deg)";
+      var a = a1 + da * t, ang = a * 180 / Math.PI;
+      // face the way the path heads, with hysteresis so a near-vertical stretch does not flicker
+      var c = Math.cos(a);
+      if (c > 0.3) face = 1; else if (c < -0.3) face = -1;
+      if (instant) flip = face;
+      else if (flip !== face) flip = face > flip ? Math.min(face, flip + 0.16) : Math.max(face, flip - 0.16);
+      // a mirrored sprite has its nose at 180deg, so it turns 180deg less; at flip ~ 0 it is edge-on, a banked turn
+      var r = flip >= 0 ? ang : ang - 180;
+      var pitch = face > 0 ? ang : 180 - ang;
+      pitch = Math.atan2(Math.sin(pitch * Math.PI / 180), Math.cos(pitch * Math.PI / 180)) * 180 / Math.PI;
+      var p = poseFor(pitch, face * (lut.k[k] + (lut.k[k2] - lut.k[k]) * t));
+      if (p !== pose) { pose = p; plane.setAttribute("data-pose", p); }
+      var h = size * ASPECT;
+      plane.style.transform = "translate3d(" + (x - size / 2).toFixed(1) + "px," + (y - h / 2).toFixed(1) + "px,0)";
+      rot.style.transform = "rotate(" + r.toFixed(1) + "deg) scaleX(" + (Math.max(0.02, Math.abs(flip)) * (flip >= 0 ? 1 : -1)).toFixed(3) + ")";
       win.setAttribute("transform", "translate(0 " + (y - trailLen).toFixed(1) + ")");
     }
 
@@ -189,7 +232,7 @@
     function tick() {
       raf = 0;
       var diff = target - cur;
-      if (Math.abs(diff) < 0.05) { cur = target; place(cur); return; }
+      if (Math.abs(diff) < 0.05 && flip === face) { cur = target; place(cur); return; }
       cur += diff * 0.14;
       place(cur);
       raf = requestAnimationFrame(tick);
@@ -210,12 +253,11 @@
         // still plane near the hero, no trail, no animation
         cancelAnimationFrame(raf); raf = 0;
         cur = target = lenForY(Math.min(vh * 0.4, 260));
-        place(cur);
+        place(cur, true);
         plane.classList.remove("idle");
       } else {
         target = targetFor();
-        if (cur < 0) cur = target; else cur = Math.min(cur, lut.n - 1);
-        place(cur);
+        if (cur < 0) { cur = target; place(cur, true); } else { cur = Math.min(cur, lut.n - 1); place(cur); }
         plane.classList.add("idle");
         if (!raf) raf = requestAnimationFrame(tick);
       }
