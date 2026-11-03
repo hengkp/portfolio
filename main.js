@@ -86,8 +86,8 @@
     var reduce = window.matchMedia("(prefers-reduced-motion: reduce)");
 
     var lut = null;            // samples from getPointAtLength: x, y, angle, turn rate
-    var STEP = 4;              // px of path length between samples
-    var size = 104, vh = 0, docH = 0, trailLen = 0;
+    var STEP = 2;              // px of path length between samples
+    var size = 104, vh = 0, docH = 0, trailLen = 0, scrollMax = 1;
     // shown: the sample index the plane is drawn at. It follows goal (from the scroll position) in both directions
     // through a damped spring, so the flight is one continuous glide. dir: which way it is travelling along the path.
     var shown = -1, goal = 0, vel = 0, dir = 1, raf = 0, settled = true, lastTs = 0, oppSince = 0;
@@ -125,23 +125,23 @@
       box.style.height = "0px";
       vh = window.innerHeight;
       docH = document.documentElement.scrollHeight;
+      scrollMax = Math.max(1, docH - vh);
       var e = contentEdges();
       var bandL = e.x0, bandR = e.W - e.x1;
       var band = Math.min(bandL, bandR);
-      var weave = band >= 110;                       // wide screens: swap sides in the gaps between sections
+      var wide = band >= 110;
       size = e.W <= 720 ? 56 : 104;
       var cL = bandL / 2, cR = e.W - bandR / 2;
-      var amp = Math.max(0, ((weave ? band : bandR) - size * 1.25) / 2 - 6);
+      var amp = Math.max(0, ((wide ? band : bandR) - size * 1.25) / 2 - 6);
       var y0 = Math.min(vh * 0.55, 150), y1 = Math.max(y0 + 200, docH - vh * 0.45);
-      // Keep the whole sprite clear of text, including its rotation and idle bob.
-      var gaps = sectionGaps(size * 2 + 64, size + 16).filter(function (g) { return g.a > y0 + 120 && g.b < y1 - 120; });
-      var dip = e.W * 0.42;  // narrow screens: swoop into the empty gap and back to the right edge
-      // start on the right, in the margin beside the hero type
-      // a shorter wave so the plane visibly banks left and right inside the margin
+      // A crossing between the gutters is only allowed where the text-free gap can host a gentle diagonal:
+      // gap height of at least three quarters of the lateral distance. Shorter gaps are not crossed; the plane keeps its gutter.
+      var lateral = cR - cL;
+      var gaps = sectionGaps(size * 2 + 64, size + 16).filter(function (g) { return g.a > y0 + 120 && g.b < y1 - 120 && wide && (g.b - g.a) >= 0.75 * lateral; });
       function sideX(side, y) { return (side ? cR : cL) + amp * Math.sin(y / 150); }
       // wide screens: open with a glide across the empty right half of the type-led hero, landing in the right margin
       var hero = document.querySelector(".hero"), heroRight = 0, heroEnd = 0, xStart = 0;
-      if (weave && hero) {
+      if (wide && hero) {
         hero.querySelectorAll(".wrap > *").forEach(function (el) {
           var rg = document.createRange(); rg.selectNodeContents(el);
           Array.prototype.forEach.call(rg.getClientRects(), function (r) { if (r.width > 0) heroRight = Math.max(heroRight, r.right); });
@@ -149,15 +149,15 @@
         heroEnd = hero.getBoundingClientRect().bottom + scrollY - 40;
         xStart = Math.min(cR, Math.max(heroRight + size + 48, (heroRight + cR) / 2));
       }
+      // waypoints every 18 px of page, then a Catmull-Rom spline (C1) through them
       var pts = [], side = 1, gi = 0;
       for (var y = y0; y <= y1 + 0.1; y += 18) {
         var g = gaps[gi];
-        while (g && y > g.b) { if (weave) side = 1 - side; gi++; g = gaps[gi]; }
+        while (g && y > g.b) { side = 1 - side; gi++; g = gaps[gi]; }
         var x;
         if (g && y >= g.a) {
           var t = smooth((y - g.a) / (g.b - g.a));
-          if (weave) x = sideX(side, g.a) * (1 - t) + sideX(1 - side, g.b) * t;
-          else x = sideX(1, y) - (sideX(1, y) - dip) * Math.sin(Math.PI * t);
+          x = sideX(side, g.a) * (1 - t) + sideX(1 - side, g.b) * t;
         } else if (xStart && y < heroEnd) {
           var th = smooth((y - y0) / (heroEnd - y0));
           x = xStart + (sideX(side, y) - xStart) * th;
@@ -166,7 +166,6 @@
         }
         pts.push([x, y]);
       }
-      // Catmull-Rom through the samples, written as cubic Beziers
       var d = "M" + pts[0][0].toFixed(1) + " " + pts[0][1].toFixed(1);
       for (var i = 0; i < pts.length - 1; i++) {
         var p0 = pts[i - 1] || pts[i], p1 = pts[i], p2 = pts[i + 1], p3 = pts[i + 2] || p2;
@@ -178,6 +177,8 @@
       svg.setAttribute("height", docH);
       svg.setAttribute("viewBox", "0 0 " + e.W + " " + docH);
       path.setAttribute("d", d);
+      // sample the spline finely by arc length; progress along the LUT is what the scroll drives, so a sideways
+      // move costs the same scroll as a vertical move of the same length
       var L = path.getTotalLength(), n = Math.ceil(L / STEP) + 1;
       lut = { n: n, L: L, x: new Float32Array(n), y: new Float32Array(n), a: new Float32Array(n), k: new Float32Array(n) };
       for (var k = 0; k < n; k++) {
@@ -188,17 +189,31 @@
         var k0 = Math.max(0, k - 2), k1 = Math.min(n - 1, k + 2);
         lut.a[k] = Math.atan2(lut.y[k1] - lut.y[k0], lut.x[k1] - lut.x[k0]);
       }
+      var maxStep = 0, maxStepY = 0, maxDx = 0, maxDxY = 0, perSample = scrollMax / (n - 1);
+      for (k = 1; k < n; k++) {
+        var st = Math.abs(Math.atan2(Math.sin(lut.a[k] - lut.a[k - 1]), Math.cos(lut.a[k] - lut.a[k - 1]))) * 180 / Math.PI;
+        if (st > maxStep) { maxStep = st; maxStepY = lut.y[k]; }
+        var dx = Math.abs(lut.x[k] - lut.x[k - 1]) / perSample;
+        if (dx > maxDx) { maxDx = dx; maxDxY = lut.y[k]; }
+      }
       for (k = 0; k < n; k++) {
         // turn rate in degrees per px of path, positive = turning clockwise on screen
-        var j0 = Math.max(0, k - 3), j1 = Math.min(n - 1, k + 3);
+        var j0 = Math.max(0, k - 6), j1 = Math.min(n - 1, k + 6);
         var dA = Math.atan2(Math.sin(lut.a[j1] - lut.a[j0]), Math.cos(lut.a[j1] - lut.a[j0]));
         lut.k[k] = j1 > j0 ? dA * 180 / Math.PI / ((j1 - j0) * STEP) : 0;
       }
+      box.setAttribute("data-max-heading-step", maxStep.toFixed(2) + "deg@" + Math.round(maxStepY));
+      box.setAttribute("data-max-dx-per-scroll", maxDx.toFixed(3) + "@" + Math.round(maxDxY));
+      box.setAttribute("data-crossings", gaps.length);
+      box.setAttribute("data-path-length", Math.round(L));
       trailLen = Math.round(vh * 1.1);
       win.setAttribute("height", trailLen);
       box.style.height = docH + "px";
       plane.style.setProperty("--plane", size + "px");
     }
+
+    // scroll drives progress by arc length: uniform speed along the path per px of scroll
+    function goalFor(scrollTop) { return Math.max(0, Math.min(lut.n - 1, scrollTop / scrollMax * (lut.n - 1))); }
 
     function lenForY(y) {
       // path is monotonic in y, so binary search the samples
@@ -288,7 +303,7 @@
 
     function onScroll() {
       if (!lut || reduce.matches) return;
-      goal = lenForY(window.scrollY + vh * 0.55);
+      goal = goalFor(window.scrollY);
       if (Math.abs(goal - shown) > 0.05 && settled) { settled = false; plane.classList.remove("idle"); }
       if (!raf) raf = requestAnimationFrame(tick);
     }
@@ -304,7 +319,7 @@
         place(shown, 0, true);
         plane.classList.remove("idle");
       } else {
-        goal = lenForY(window.scrollY + vh * 0.55);
+        goal = goalFor(window.scrollY);
         if (shown < 0) { shown = goal; vel = 0; place(shown, 0, true); }
         else { shown = Math.max(0, Math.min(shown, lut.n - 1)); place(shown, 0); }
         settled = true;
