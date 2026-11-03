@@ -57,6 +57,12 @@
     });
   });
 
+  /* Draw each ink stroke when its reveal container enters the viewport. */
+  document.querySelectorAll(".line-doodle path").forEach(function (path) {
+    path.style.setProperty("--length", path.getTotalLength());
+  });
+  root.classList.add("draw-ready");
+
   /* reveal on scroll */
   var items = document.querySelectorAll(".reveal");
   if ("IntersectionObserver" in window) {
@@ -77,12 +83,12 @@
     var win = box.querySelector(".trail-window");
     var plane = box.querySelector(".plane");
     var rot = box.querySelector(".plane-rot");
-    var ASPECT = 105 / 240;     // sprite canvas, see assets/img/plane-*.webp
+    var ASPECT = 228 / 329;     // sprite canvas, see assets/img/plane-*.webp
     var reduce = window.matchMedia("(prefers-reduced-motion: reduce)");
 
     var lut = null;            // samples from getPointAtLength: x, y, angle, turn rate
     var STEP = 4;              // px of path length between samples
-    var size = 80, vh = 0, docH = 0, trailLen = 0;
+    var size = 104, vh = 0, docH = 0, trailLen = 0;
     var cur = -1, target = 0, raf = 0, idleTimer = 0;
     var face = 1, flip = 1, pose = "level";   // face: +1 nose right, -1 nose left; flip eases between them
 
@@ -118,15 +124,16 @@
       var bandL = e.x0, bandR = e.W - e.x1;
       var band = Math.min(bandL, bandR);
       var weave = band >= 110;                       // wide screens: swap sides in the gaps between sections
-      size = Math.round(weave ? Math.max(72, Math.min(88, band * 0.45)) : Math.max(40, Math.min(48, bandR * 1.22)));
+      size = e.W <= 720 ? 56 : 104;
       var cL = bandL / 2, cR = e.W - bandR / 2;
-      var amp = weave ? band * 0.2 : Math.max(0, (bandR - size) * 0.25);
+      var amp = Math.max(0, ((weave ? band : bandR) - size * 1.25) / 2 - 6);
       var y0 = Math.min(vh * 0.55, 150), y1 = Math.max(y0 + 200, docH - vh * 0.45);
-      // keep the turns clear of the last and first lines: half a plane length plus a little air
-      var gaps = sectionGaps(weave ? 200 : 150, 18 + size * 0.5).filter(function (g) { return g.a > y0 + 120 && g.b < y1 - 120; });
+      // Keep the whole sprite clear of text, including its rotation and idle bob.
+      var gaps = sectionGaps(size * 2 + 64, size + 16).filter(function (g) { return g.a > y0 + 120 && g.b < y1 - 120; });
       var dip = e.W * 0.42;  // narrow screens: swoop into the empty gap and back to the right edge
       // start on the right, in the margin beside the hero type
-      function sideX(side, y) { return (side ? cR : cL) + amp * Math.sin(y / 260); }
+      // a shorter wave so the plane visibly banks left and right inside the margin
+      function sideX(side, y) { return (side ? cR : cL) + amp * Math.sin(y / 150); }
       // wide screens: open with a glide across the empty right half of the type-led hero, landing in the right margin
       var hero = document.querySelector(".hero"), heroRight = 0, heroEnd = 0, xStart = 0;
       if (weave && hero) {
@@ -162,6 +169,23 @@
              " " + (p2[0] - (p3[0] - p1[0]) / 6).toFixed(1) + " " + (p2[1] - (p3[1] - p1[1]) / 6).toFixed(1) +
              " " + p2[0].toFixed(1) + " " + p2[1].toFixed(1);
       }
+      // Three small arc flourishes stay within the empty gap bands.
+      // Their endpoints preserve monotonic y for the original binary search.
+      var curls = 0;
+      d = d.replace(/ C([^C]+)/g, function (segment, coordinates) {
+        var values = coordinates.trim().split(/\s+/).map(Number);
+        var endX = values[4], endY = values[5];
+        var gap = gaps[curls];
+        if (curls < 3 && gap && gap.b - gap.a >= 36 &&
+            endY >= (gap.a + gap.b) / 2 && endY < (gap.a + gap.b) / 2 + 18) {
+          curls++;
+          // a sideways hook: both control points sit below the previous point, so y stays monotonic
+          var hook = (curls % 2 ? 1 : -1) * Math.min(90, size * 0.9);
+          return " C" + (endX + hook).toFixed(1) + " " + (endY - 16).toFixed(1) +
+            " " + (endX + hook).toFixed(1) + " " + (endY - 1).toFixed(1) + " " + endX + " " + endY;
+        }
+        return segment;
+      });
       svg.setAttribute("width", e.W);
       svg.setAttribute("height", docH);
       svg.setAttribute("viewBox", "0 0 " + e.W + " " + docH);
