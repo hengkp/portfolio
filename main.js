@@ -88,83 +88,26 @@
 
     var lut = null;            // samples from getPointAtLength: x, y, angle, turn rate
     var STEP = 4;              // px of path length between samples
-    var size = 104, vh = 0, docH = 0, trailLen = 0, scrollNow = 0;
-    // shown: the sample index the plane is drawn at. It only ever grows, so the plane never flies backwards.
-    // goal: where the scroll position wants it. vel: smoothed speed in samples per frame.
-    var shown = -1, goal = 0, vel = 0, raf = 0, settled = true;
-    var face = 1, flip = 1, pose = "level";   // face: +1 nose right, -1 nose left; flip eases between them
-    var heading = 0, headingSet = false;      // eased tangent angle in degrees
-    var wind = box.querySelector(".wind");
-
-    function contentEdges() {
-      var w = document.querySelector("main .wrap");
-      var W = document.documentElement.clientWidth;
-      if (!w) return { W: W, x0: 0, x1: W };
-      var r = w.getBoundingClientRect(), cs = getComputedStyle(w);
-      return { W: W, x0: r.left + parseFloat(cs.paddingLeft), x1: r.right - parseFloat(cs.paddingRight) };
-    }
-
-    function sectionGaps(minGap, inset) {
-      // vertical bands with no text: bottom padding of one section + top padding of the next
-      var secs = Array.prototype.slice.call(document.querySelectorAll("main > section"));
-      var gaps = [];
-      for (var i = 0; i < secs.length - 1; i++) {
-        var a = secs[i], b = secs[i + 1];
-        var ra = a.getBoundingClientRect(), rb = b.getBoundingClientRect();
-        var pa = parseFloat(getComputedStyle(a).paddingBottom), pb = parseFloat(getComputedStyle(b).paddingTop);
-        var top = ra.bottom + scrollY - pa, bottom = rb.top + scrollY + pb;
-        if (bottom - top >= minGap) gaps.push({ a: top + inset, b: bottom - inset });
-      }
-      return gaps;
-    }
-
-    function smooth(t) { return t * t * (3 - 2 * t); }
+    var size = 104, vh = 0, docH = 0, trailLen = 0;
+    // shown: the sample index the plane is drawn at. It follows goal (from the scroll position) in both directions
+    // through a damped spring, so the flight is one continuous glide. dir: which way it is travelling along the path.
+    var shown = -1, goal = 0, vel = 0, dir = 1, raf = 0, settled = true, lastTs = 0;
+    var face = 1, flip = 1, pose = "level";   // face: +1 nose right, -1 nose left; flip eases between them (a banked turn)
+    var heading = 0, headingSet = false;      // eased nose angle in degrees
 
     function build() {
       box.style.height = "0px";
       vh = window.innerHeight;
       docH = document.documentElement.scrollHeight;
-      var e = contentEdges();
-      var bandL = e.x0, bandR = e.W - e.x1;
-      var band = Math.min(bandL, bandR);
-      var weave = band >= 110;                       // wide screens: swap sides in the gaps between sections
-      size = e.W <= 720 ? 56 : 104;
-      var cL = bandL / 2, cR = e.W - bandR / 2;
-      var amp = Math.max(0, ((weave ? band : bandR) - size * 1.25) / 2 - 6);
+      var W = document.documentElement.clientWidth;
+      size = W <= 720 ? 56 : 104;
+      // one long, gentle S-curve down the page: it swings almost edge to edge with large-radius turns,
+      // starting in the right margin beside the hero, and is allowed to pass over the text column
+      var cx = W / 2, A = W / 2 - size * 0.95;
+      var lambda = W <= 720 ? Math.max(1500, vh * 1.9) : Math.max(3000, vh * 3.2);   // px of page per full S
       var y0 = Math.min(vh * 0.55, 150), y1 = Math.max(y0 + 200, docH - vh * 0.45);
-      // Keep the whole sprite clear of text, including its rotation and idle bob.
-      var gaps = sectionGaps(size * 2 + 64, size + 16).filter(function (g) { return g.a > y0 + 120 && g.b < y1 - 120; });
-      var dip = e.W * 0.42;  // narrow screens: swoop into the empty gap and back to the right edge
-      // start on the right, in the margin beside the hero type
-      // a shorter wave so the plane visibly banks left and right inside the margin
-      function sideX(side, y) { return (side ? cR : cL) + amp * Math.sin(y / 150); }
-      // wide screens: open with a glide across the empty right half of the type-led hero, landing in the right margin
-      var hero = document.querySelector(".hero"), heroRight = 0, heroEnd = 0, xStart = 0;
-      if (weave && hero) {
-        hero.querySelectorAll(".wrap > *").forEach(function (el) {
-          var rg = document.createRange(); rg.selectNodeContents(el);
-          Array.prototype.forEach.call(rg.getClientRects(), function (r) { if (r.width > 0) heroRight = Math.max(heroRight, r.right); });
-        });
-        heroEnd = hero.getBoundingClientRect().bottom + scrollY - 40;
-        xStart = Math.min(cR, Math.max(heroRight + size + 48, (heroRight + cR) / 2));
-      }
-      var pts = [], side = 1, gi = 0;
-      for (var y = y0; y <= y1 + 0.1; y += 18) {
-        var g = gaps[gi];
-        while (g && y > g.b) { if (weave) side = 1 - side; gi++; g = gaps[gi]; }
-        var x;
-        if (g && y >= g.a) {
-          var t = smooth((y - g.a) / (g.b - g.a));
-          if (weave) x = sideX(side, g.a) * (1 - t) + sideX(1 - side, g.b) * t;
-          else x = sideX(1, y) - (sideX(1, y) - dip) * Math.sin(Math.PI * t);
-        } else if (xStart && y < heroEnd) {
-          var th = smooth((y - y0) / (heroEnd - y0));
-          x = xStart + (sideX(side, y) - xStart) * th;
-        } else {
-          x = sideX(side, y);
-        }
-        pts.push([x, y]);
-      }
+      var pts = [];
+      for (var y = y0; y <= y1 + 0.1; y += 18) pts.push([cx + A * Math.cos(2 * Math.PI * (y - y0) / lambda), y]);
       // Catmull-Rom through the samples, written as cubic Beziers
       var d = "M" + pts[0][0].toFixed(1) + " " + pts[0][1].toFixed(1);
       for (var i = 0; i < pts.length - 1; i++) {
@@ -173,26 +116,9 @@
              " " + (p2[0] - (p3[0] - p1[0]) / 6).toFixed(1) + " " + (p2[1] - (p3[1] - p1[1]) / 6).toFixed(1) +
              " " + p2[0].toFixed(1) + " " + p2[1].toFixed(1);
       }
-      // Three small arc flourishes stay within the empty gap bands.
-      // Their endpoints preserve monotonic y for the original binary search.
-      var curls = 0;
-      d = d.replace(/ C([^C]+)/g, function (segment, coordinates) {
-        var values = coordinates.trim().split(/\s+/).map(Number);
-        var endX = values[4], endY = values[5];
-        var gap = gaps[curls];
-        if (curls < 3 && gap && gap.b - gap.a >= 36 &&
-            endY >= (gap.a + gap.b) / 2 && endY < (gap.a + gap.b) / 2 + 18) {
-          curls++;
-          // a sideways hook: both control points sit below the previous point, so y stays monotonic
-          var hook = (curls % 2 ? 1 : -1) * Math.min(90, size * 0.9);
-          return " C" + (endX + hook).toFixed(1) + " " + (endY - 16).toFixed(1) +
-            " " + (endX + hook).toFixed(1) + " " + (endY - 1).toFixed(1) + " " + endX + " " + endY;
-        }
-        return segment;
-      });
-      svg.setAttribute("width", e.W);
+      svg.setAttribute("width", W);
       svg.setAttribute("height", docH);
-      svg.setAttribute("viewBox", "0 0 " + e.W + " " + docH);
+      svg.setAttribute("viewBox", "0 0 " + W + " " + docH);
       path.setAttribute("d", d);
       var L = path.getTotalLength(), n = Math.ceil(L / STEP) + 1;
       lut = { n: n, L: L, x: new Float32Array(n), y: new Float32Array(n), a: new Float32Array(n), k: new Float32Array(n) };
@@ -235,59 +161,55 @@
 
     function shortest(deg) { return ((deg + 540) % 360) - 180; }
 
-    // Draw the plane at sample index f. speed is samples per frame (sets the wind streaks).
+    // Draw the plane at sample index f, nose along the direction of travel.
     // Returns true while the heading or the mirror flip is still easing, so the loop keeps running.
-    function place(f, speed, instant) {
+    function place(f, instant) {
       var i = Math.max(0, Math.min(lut.n - 1, f)), k = Math.floor(i), t = i - k, k2 = Math.min(lut.n - 1, k + 1);
       var x = lut.x[k] + (lut.x[k2] - lut.x[k]) * t, y = lut.y[k] + (lut.y[k2] - lut.y[k]) * t;
       var a1 = lut.a[k], a2 = lut.a[k2], da = Math.atan2(Math.sin(a2 - a1), Math.cos(a2 - a1));
-      var a = a1 + da * t, ang = a * 180 / Math.PI;
-      // face the way the path heads, with hysteresis so a near-vertical stretch does not flicker
-      var c = Math.cos(a);
+      var ang = (a1 + da * t) * 180 / Math.PI;
+      var nose = shortest(dir > 0 ? ang : ang + 180);
+      // the nose swings round along the shortest arc; a reversal is a 180deg turn that takes about 400 ms
+      var dh = shortest(nose - heading);
+      if (instant || !headingSet) { heading = nose; headingSet = true; dh = 0; }
+      else heading += dh * 0.14;
+      heading = shortest(heading);
+      // keep the sprite the right way up: mirror it when the nose points left, with hysteresis near vertical
+      var c = Math.cos(heading * Math.PI / 180);
       if (c > 0.3) face = 1; else if (c < -0.3) face = -1;
       if (instant) flip = face;
-      else if (flip !== face) flip = face > flip ? Math.min(face, flip + 0.16) : Math.max(face, flip - 0.16);
-      // the tangent angle is eased along the shortest arc; the mirror flip handles the 180deg turn
-      var dh = shortest(ang - heading);
-      if (instant || !headingSet) { heading = ang; headingSet = true; dh = 0; }
-      else { heading += dh * 0.18; }
-      heading = shortest(heading);
-      // a mirrored sprite has its nose at 180deg, so it turns 180deg less; at flip ~ 0 it is edge-on, a banked turn
+      else if (flip !== face) flip = face > flip ? Math.min(face, flip + 0.08) : Math.max(face, flip - 0.08);
+      // a mirrored sprite has its nose at 180deg; at flip ~ 0 it is edge-on, which reads as a banked turn.
+      // While the nose is still swinging round, squeeze the wings as well so the turnaround banks instead of spinning flat.
       var r = flip >= 0 ? heading : heading - 180;
-      var pitch = face > 0 ? ang : 180 - ang;
-      pitch = shortest(pitch);
-      var p = poseFor(pitch, face * (lut.k[k] + (lut.k[k2] - lut.k[k]) * t));
+      var bank = 1 - 0.6 * Math.min(1, Math.abs(dh) / 120);
+      var sx = Math.max(0.02, Math.abs(flip) * bank) * (flip >= 0 ? 1 : -1);
+      var pitch = shortest(face > 0 ? heading : 180 - heading);
+      var p = poseFor(pitch, dir * face * (lut.k[k] + (lut.k[k2] - lut.k[k]) * t));
       if (p !== pose) { pose = p; plane.setAttribute("data-pose", p); }
       var h = size * ASPECT;
-      var sx = Math.max(0.02, Math.abs(flip)) * (flip >= 0 ? 1 : -1);
       plane.style.transform = "translate3d(" + (x - size / 2).toFixed(1) + "px," + (y - h / 2).toFixed(1) + "px,0) rotate(" + r.toFixed(2) + "deg) scaleX(" + sx.toFixed(3) + ")";
-      if (wind) {
-        // streaks trail the tail and stretch with speed: gone at rest, full at about 14 px per frame
-        var s = Math.max(0, Math.min(1, speed * STEP / 14));
-        wind.style.opacity = (s * 0.85).toFixed(3);
-        wind.style.transform = "scaleX(" + (0.3 + 0.7 * s).toFixed(3) + ")";
-      }
       win.setAttribute("transform", "translate(0 " + (y - trailLen).toFixed(1) + ")");
       return Math.abs(dh) > 0.4 || flip !== face;
     }
 
-    var lastTs = 0;
     function tick(ts) {
       raf = 0;
       // frame-rate independent: integrate one 60 Hz step per 16.7 ms elapsed (capped), so 120 Hz screens and throttled tabs glide alike
       var steps = lastTs ? Math.max(1, Math.min(8, Math.round((ts - lastTs) / 16.7))) : 1;
       lastTs = ts;
       for (var i = 0; i < steps; i++) {
-        var diff = goal - shown;
-        // critically damped glide: the velocity carries the plane to a soft stop, never past the goal and never backwards
-        vel = vel * 0.5 + diff * 0.1;
-        if (vel < 0) vel = 0;
+        // critically damped spring: it glides to a soft stop with no overshoot, in either direction
+        vel = vel * 0.5 + (goal - shown) * 0.1;
         shown += vel;
-        if (shown > goal) { shown = goal; vel = 0; }
+        if (shown < 0) { shown = 0; vel = 0; }
+        if (shown > lut.n - 1) { shown = lut.n - 1; vel = 0; }
       }
-      var easing = place(shown, vel);
-      if (goal - shown < 0.5 && vel < 0.1 && !easing) {
-        shown = goal; vel = 0; place(shown, 0);
+      // direction of travel with hysteresis, so trackpad jitter does not flip the plane
+      if (vel > 0.2) dir = 1; else if (vel < -0.2) dir = -1;
+      var easing = place(shown);
+      if (Math.abs(goal - shown) < 0.5 && Math.abs(vel) < 0.1 && !easing) {
+        shown = goal; vel = 0; place(shown);
         lastTs = 0;
         if (!settled) { settled = true; plane.classList.add("idle"); }
         return;
@@ -295,27 +217,10 @@
       raf = requestAnimationFrame(tick);
     }
 
-    // Jump to the path point just above the viewport, so the plane re-enters from the top edge and glides forward.
-    function reenter(g) {
-      shown = Math.max(0, Math.min(g, lenForY(scrollNow - size)));
-      vel = 0;
-      place(shown, 0, true);
-    }
-
     function onScroll() {
       if (!lut || reduce.matches) return;
-      scrollNow = window.scrollY;
-      var g = lenForY(scrollNow + vh * 0.55);
-      var py = lut.y[Math.max(0, Math.min(lut.n - 1, Math.round(shown)))] - scrollNow;   // plane y inside the viewport
-      if (g >= shown) {
-        if (py < -vh * 0.6) reenter(g);            // the reader jumped far down: come in from the top edge
-        goal = g;
-      } else if (py > vh - size * 0.3) {
-        reenter(g); goal = g;                      // scrolled up until the plane reached the bottom edge: it comes back in from the top, still flying forward
-      } else {
-        goal = shown;                              // scrolling up: hold position, nose forward, and bob
-      }
-      if (goal > shown + 0.05 && settled) { settled = false; plane.classList.remove("idle"); }
+      goal = lenForY(window.scrollY + vh * 0.55);
+      if (Math.abs(goal - shown) > 0.05 && settled) { settled = false; plane.classList.remove("idle"); }
       if (!raf) raf = requestAnimationFrame(tick);
     }
 
@@ -325,14 +230,13 @@
         // still plane near the hero, no trail, no animation
         cancelAnimationFrame(raf); raf = 0;
         shown = goal = lenForY(Math.min(vh * 0.4, 260));
-        vel = 0;
-        place(shown, 0, true);
+        vel = 0; dir = 1;
+        place(shown, true);
         plane.classList.remove("idle");
       } else {
-        scrollNow = window.scrollY;
-        goal = lenForY(scrollNow + vh * 0.55);
-        if (shown < 0) { shown = goal; vel = 0; place(shown, 0, true); }
-        else { shown = Math.min(shown, lut.n - 1); if (goal < shown) goal = shown; place(shown, 0); }
+        goal = lenForY(window.scrollY + vh * 0.55);
+        if (shown < 0) { shown = goal; vel = 0; place(shown, true); }
+        else { shown = Math.max(0, Math.min(shown, lut.n - 1)); place(shown); }
         settled = true;
         plane.classList.add("idle");
         onScroll();
