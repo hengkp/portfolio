@@ -82,7 +82,6 @@
     var path = box.querySelector(".trail-path");
     var win = box.querySelector(".trail-window");
     var plane = box.querySelector(".plane");
-    var rot = box.querySelector(".plane-rot");
     var ASPECT = 228 / 329;     // sprite canvas, see assets/img/plane-*.webp
     var reduce = window.matchMedia("(prefers-reduced-motion: reduce)");
 
@@ -95,9 +94,8 @@
     var face = 1, wantFace = 1, pose = "level";    // face: +1 nose right (plain sprite), -1 nose left (mirrored sprite)
     var flipActive = false, flipStart = 0, flipFrom = 1, flipTo = 1, sxNow = 1;   // the one banked turn: scaleX 1 -> -1 through 0
     var heading = 0, headingSet = false;           // eased in-plane rotation in degrees
-    var rolls = [], tilts = [], acro = null;       // acrobatics on the inner element: barrel roll, crossing tilt
-    var flight = { rolls: [], tilts: [] };
-    var FLIP_MS = 350, HYST_MS = 120, ROLL_MS = 500, TILT_MS = 600;
+    var flight = {};
+    var FLIP_MS = 350, HYST_MS = 120;
 
     function contentEdges() {
       var w = document.querySelector("main .wrap");
@@ -200,17 +198,7 @@
       win.setAttribute("height", trailLen);
       box.style.height = docH + "px";
       plane.style.setProperty("--plane", size + "px");
-      // acrobatics: a barrel roll at the middle of the three longest straight gutter stretches, a small tilt at every crossing
-      var bounds = [y0].concat(gaps.map(function (g) { return [g.a, g.b]; }).reduce(function (a, b) { return a.concat(b); }, []), [y1]);
-      var straights = [];
-      for (var s = 0; s < bounds.length; s += 2) if (bounds[s + 1] - bounds[s] >= vh * 1.2) straights.push({ a: bounds[s], b: bounds[s + 1], len: bounds[s + 1] - bounds[s] });
-      straights.sort(function (p, q) { return q.len - p.len; });
-      rolls = straights.slice(0, 3).map(function (st) { var y = (st.a + st.b) / 2; return { y: Math.round(y), i: lenForY(y), armed: true }; }).sort(function (p, q) { return p.i - q.i; });
-      tilts = gaps.map(function (g) { var y = (g.a + g.b) / 2; return { y: Math.round(y), i: lenForY(y), armed: true }; });
-      flight.rolls = rolls.map(function (r) { return r.y; }); flight.tilts = tilts.map(function (r) { return r.y; });
-      box.setAttribute("data-rolls", flight.rolls.join(",")); box.setAttribute("data-tilts", flight.tilts.join(","));
     }
-
 
     function lenForY(y) {
       // path is monotonic in y, so binary search the samples
@@ -240,8 +228,7 @@
       var a1 = lut.a[k], a2 = lut.a[k2], da = Math.atan2(Math.sin(a2 - a1), Math.cos(a2 - a1));
       var ang = (a1 + da * t) * 180 / Math.PI;
       var nose = shortest(dir > 0 ? ang : ang + 180);
-      var busy = flipActive || !!acro;
-      if (!busy) {
+      if (!flipActive) {
         // keep the sprite the right way up: mirror it when the nose points left, with hysteresis near vertical
         var c = Math.cos(nose * Math.PI / 180);
         if (c > 0.3) wantFace = 1; else if (c < -0.3) wantFace = -1;
@@ -257,7 +244,7 @@
       var target = face > 0 ? nose : nose - 180;
       var dh = shortest(target - heading);
       if (instant || !headingSet) { heading = target; headingSet = true; dh = 0; }
-      else heading += dh * 0.14;
+      else heading += dh * 0.1;
       heading = shortest(heading);
       var pitch = shortest(face > 0 ? nose : 180 - nose);
       var p = poseFor(pitch, dir * face * (lut.k[k] + (lut.k[k2] - lut.k[k]) * t));
@@ -265,15 +252,8 @@
       var h = size * ASPECT;
       var sx = Math.abs(sxNow) < 0.02 ? 0.02 * (sxNow < 0 ? -1 : 1) : sxNow;
       plane.style.transform = "translate3d(" + (x - size / 2).toFixed(1) + "px," + (y - h / 2).toFixed(1) + "px,0) rotate(" + heading.toFixed(2) + "deg) scaleX(" + sx.toFixed(3) + ")";
-      // acrobatics on the inner element, so the heading stays on the path
-      if (acro) {
-        var at = Math.min(1, (ts - acro.start) / acro.dur);
-        var deg = acro.kind === "roll" ? 360 * easeInOut(at) : 18 * Math.sin(Math.PI * at);
-        rot.style.transform = "rotateX(" + deg.toFixed(1) + "deg)";
-        if (at >= 1) { acro = null; rot.style.transform = ""; }
-      }
       win.setAttribute("transform", "translate(0 " + (y - trailLen).toFixed(1) + ")");
-      return Math.abs(dh) > 0.4 || flipActive || !!acro;
+      return Math.abs(dh) > 0.4 || flipActive;
     }
 
     function tick(ts) {
@@ -281,32 +261,20 @@
       // frame-rate independent: integrate one 60 Hz step per 16.7 ms elapsed (capped), so 120 Hz screens and throttled tabs glide alike
       var steps = lastTs ? Math.max(1, Math.min(8, Math.round((ts - lastTs) / 16.7))) : 1;
       lastTs = ts;
-      var prev = shown;
       for (var i = 0; i < steps; i++) {
-        // critically damped spring: it glides to a soft stop with no overshoot, in either direction
-        vel = vel * 0.5 + (goal - shown) * 0.1;
+        // over-damped spring (real eigenvalues 0.82 and 0.61): a calm glide to a soft stop with no overshoot, in either direction
+        vel = vel * 0.5 + (goal - shown) * 0.07;
         shown += vel;
         if (shown < 0) { shown = 0; vel = 0; }
         if (shown > lut.n - 1) { shown = lut.n - 1; vel = 0; }
       }
       // ONE direction state. It changes only after the smoothed velocity has pointed the other way, above a small
-      // threshold, for HYST_MS, and never while a turn or a roll is in progress (a second reversal waits its turn).
-      if (!flipActive && !acro) {
+      // threshold, for HYST_MS, and never while a turn is in progress (a second reversal waits its turn).
+      if (!flipActive) {
         if (Math.abs(vel) > 0.2 && (vel > 0) !== (dir > 0)) {
           if (!oppSince) oppSince = ts;
           else if (ts - oppSince >= HYST_MS) { dir = -dir; oppSince = 0; wantFace = -face; }
         } else oppSince = 0;
-      }
-      // acrobatics: a barrel roll on a straight stretch when passing forward at speed; a small tilt at each crossing
-      if (!reduce.matches && !flipActive && !acro) {
-        for (var r = 0; r < rolls.length; r++) {
-          if (rolls[r].armed && prev < rolls[r].i && shown >= rolls[r].i && dir > 0 && vel > 1.2) { acro = { kind: "roll", start: ts, dur: ROLL_MS }; rolls[r].armed = false; }
-          else if (!rolls[r].armed && shown < rolls[r].i - 150) rolls[r].armed = true;
-        }
-        for (var q = 0; q < tilts.length && !acro; q++) {
-          if (tilts[q].armed && ((prev < tilts[q].i && shown >= tilts[q].i) || (prev > tilts[q].i && shown <= tilts[q].i))) { acro = { kind: "tilt", start: ts, dur: TILT_MS }; tilts[q].armed = false; }
-          else if (!tilts[q].armed && Math.abs(shown - tilts[q].i) > 60) tilts[q].armed = true;
-        }
       }
       var easing = place(shown, ts);
       if (Math.abs(goal - shown) < 0.5 && Math.abs(vel) < 0.1 && !easing) {
@@ -327,7 +295,7 @@
 
     function rebuild() {
       build();
-      acro = null; rot.style.transform = ""; flipActive = false; oppSince = 0;
+      flipActive = false; oppSince = 0;
       if (reduce.matches) {
         // still plane near the hero, no trail, no animation
         cancelAnimationFrame(raf); raf = 0;
