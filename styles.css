@@ -154,3 +154,5 @@ main > section + section { margin-top: 96px; }
 .key-word .hero-underline { position: absolute; left: -5%; bottom: -.12em; width: 110%; height: .28em; margin: 0; }
 .label-number { position: relative; display: inline-block; margin-right: 6px; }
 .label-circle { position: absolute; width: 150%; height: 160%; left: -25%; top: -30%; }
+
+.nw { white-space: nowrap; }
