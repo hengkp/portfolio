@@ -1,36 +1,67 @@
 <!doctype html>
-<html lang="en">
+<html lang="th">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Heng · Kriengkrai Phongkitkarun</title>
-<meta name="description" content="Bioinformatician at Siriraj, Mahidol University, and co-founder of Happlen. Image analysis, lab platforms and AI agent systems.">
+<title>เฮง · เกรียงไกร พงษ์กิจการุณ</title>
+<meta name="description" content="นักชีวสารสนเทศ คณะแพทยศาสตร์ศิริราชพยาบาล มหาวิทยาลัยมหิดล และผู้ร่วมก่อตั้ง Happlen ทำงานด้านวิเคราะห์ภาพ แพลตฟอร์มของแลป และระบบเอเจนต์ AI">
 <meta name="theme-color" content="#000000">
-<meta property="og:title" content="Heng · Kriengkrai Phongkitkarun">
-<meta property="og:description" content="I teach machines to see cells. Then I build the systems that let a small team work like a large one.">
+<meta property="og:title" content="เฮง · เกรียงไกร พงษ์กิจการุณ">
+<meta property="og:description" content="ผมสอนคอมพิวเตอร์ให้มองเห็นเซลล์ แล้วสร้างระบบที่ทำให้ทีมเล็ก ๆ ทำงานได้เหมือนทีมใหญ่">
+<meta property="og:locale" content="th_TH">
+<meta property="og:locale:alternate" content="en_US">
 <meta property="og:image" content="https://hengkp.github.io/portfolio/assets/img/hero-nucleus.jpg">
+<link rel="alternate" hreflang="th" href="https://hengkp.github.io/portfolio/?lang=th">
+<link rel="alternate" hreflang="en" href="https://hengkp.github.io/portfolio/?lang=en">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 64 64%27%3E%3Crect width=%2764%27 height=%2764%27 rx=%2714%27 fill=%27%23000%27/%3E%3Cpath d=%27M56 30 L8 18 L24 33 Z%27 fill=%27%23fff%27/%3E%3Cpath d=%27M56 30 L24 33 L14 46 Z%27 fill=%27%23d2d2d7%27/%3E%3Cpath d=%27M56 30 L24 33 L28 40 Z%27 fill=%27%232997ff%27/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@400;500;600&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="styles.css">
 <script>
-try { var t = localStorage.getItem("theme"); if (t === "light" || t === "dark") document.documentElement.setAttribute("data-theme", t); } catch (e) {}
+window.I18N = {
+  th: {
+    title: "เฮง · เกรียงไกร พงษ์กิจการุณ",
+    desc: "นักชีวสารสนเทศ คณะแพทยศาสตร์ศิริราชพยาบาล มหาวิทยาลัยมหิดล และผู้ร่วมก่อตั้ง Happlen ทำงานด้านวิเคราะห์ภาพ แพลตฟอร์มของแลป และระบบเอเจนต์ AI",
+    og: "ผมสอนคอมพิวเตอร์ให้มองเห็นเซลล์ แล้วสร้างระบบที่ทำให้ทีมเล็ก ๆ ทำงานได้เหมือนทีมใหญ่"
+  },
+  en: {
+    title: "Heng · Kriengkrai Phongkitkarun",
+    desc: "Bioinformatician at Siriraj, Mahidol University, and co-founder of Happlen. Image analysis, lab platforms and AI agent systems.",
+    og: "I teach machines to see cells. Then I build the systems that let a small team work like a large one."
+  }
+};
+(function () {
+  var d = document.documentElement, l = null;
+  try { var q = new URLSearchParams(location.search).get("lang"); if (q === "th" || q === "en") l = q; } catch (e) {}
+  if (!l) { try { var s = localStorage.getItem("lang"); if (s === "th" || s === "en") l = s; } catch (e) {} }
+  l = l || "th";
+  d.setAttribute("lang", l);
+  document.title = window.I18N[l].title;
+  try { var t = localStorage.getItem("theme"); if (t === "light" || t === "dark") d.setAttribute("data-theme", t); } catch (e) {}
+})();
 </script>
 </head>
 <body>
 <svg width="0" height="0" style="position:absolute" aria-hidden="true"><symbol id="i-sun" viewBox="0 0 24 24"><path d="M12 18C8.68629 18 6 15.3137 6 12C6 8.68629 8.68629 6 12 6C15.3137 6 18 8.68629 18 12C18 15.3137 15.3137 18 12 18ZM12 16C14.2091 16 16 14.2091 16 12C16 9.79086 14.2091 8 12 8C9.79086 8 8 9.79086 8 12C8 14.2091 9.79086 16 12 16ZM11 1H13V4H11V1ZM11 20H13V23H11V20ZM3.51472 4.92893L4.92893 3.51472L7.05025 5.63604L5.63604 7.05025L3.51472 4.92893ZM16.9497 18.364L18.364 16.9497L20.4853 19.0711L19.0711 20.4853L16.9497 18.364ZM19.0711 3.51472L20.4853 4.92893L18.364 7.05025L16.9497 5.63604L19.0711 3.51472ZM5.63604 16.9497L7.05025 18.364L4.92893 20.4853L3.51472 19.0711L5.63604 16.9497ZM23 11V13H20V11H23ZM4 11V13H1V11H4Z"/></symbol><symbol id="i-moon" viewBox="0 0 24 24"><path d="M10 7C10 10.866 13.134 14 17 14C18.9584 14 20.729 13.1957 21.9995 11.8995C22 11.933 22 11.9665 22 12C22 17.5228 17.5228 22 12 22C6.47715 22 2 17.5228 2 12C2 6.47715 6.47715 2 12 2C12.0335 2 12.067 2 12.1005 2.00049C10.8043 3.27098 10 5.04157 10 7ZM4 12C4 16.4183 7.58172 20 12 20C15.0583 20 17.7158 18.2839 19.062 15.7621C18.3945 15.9187 17.7035 16 17 16C12.0294 16 8 11.9706 8 7C8 6.29648 8.08133 5.60547 8.2379 4.938C5.71611 6.28423 4 8.9417 4 12Z"/></symbol><symbol id="i-x" viewBox="0 0 24 24"><path d="M10.4883 14.651L15.25 21H22.25L14.3917 10.5223L20.9308 3H18.2808L13.1643 8.88578L8.75 3H1.75L9.26086 13.0145L2.31915 21H4.96917L10.4883 14.651ZM16.25 19L5.75 5H7.75L18.25 19H16.25Z"/></symbol><symbol id="i-github" viewBox="0 0 24 24"><path d="M5.88401 18.6533C5.58404 18.4526 5.32587 18.1975 5.0239 17.8369C4.91473 17.7065 4.47283 17.1524 4.55811 17.2583C4.09533 16.6833 3.80296 16.417 3.50156 16.3089C2.9817 16.1225 2.7114 15.5499 2.89784 15.0301C3.08428 14.5102 3.65685 14.2399 4.17672 14.4263C4.92936 14.6963 5.43847 15.1611 6.12425 16.0143C6.03025 15.8974 6.46364 16.441 6.55731 16.5529C6.74784 16.7804 6.88732 16.9182 6.99629 16.9911C7.20118 17.1283 7.58451 17.1874 8.14709 17.1311C8.17065 16.7489 8.24136 16.3783 8.34919 16.0358C5.38097 15.3104 3.70116 13.3952 3.70116 9.63971C3.70116 8.40085 4.0704 7.28393 4.75917 6.3478C4.5415 5.45392 4.57433 4.37284 5.06092 3.15636C5.1725 2.87739 5.40361 2.66338 5.69031 2.57352C5.77242 2.54973 5.81791 2.53915 5.89878 2.52673C6.70167 2.40343 7.83573 2.69705 9.31449 3.62336C10.181 3.41879 11.0885 3.315 12.0012 3.315C12.9129 3.315 13.8196 3.4186 14.6854 3.62277C16.1619 2.69 17.2986 2.39649 18.1072 2.52651C18.1919 2.54013 18.2645 2.55783 18.3249 2.57766C18.6059 2.66991 18.8316 2.88179 18.9414 3.15636C19.4279 4.37256 19.4608 5.45344 19.2433 6.3472C19.9342 7.28337 20.3012 8.39208 20.3012 9.63971C20.3012 13.3968 18.627 15.3048 15.6588 16.032C15.7837 16.447 15.8496 16.9105 15.8496 17.4121C15.8496 18.0765 15.8471 18.711 15.8424 19.4225C15.8412 19.6127 15.8397 19.8159 15.8375 20.1281C16.2129 20.2109 16.5229 20.5077 16.6031 20.9089C16.7114 21.4504 16.3602 21.9773 15.8186 22.0856C14.6794 22.3134 13.8353 21.5538 13.8353 20.5611C13.8353 20.4708 13.836 20.3417 13.8375 20.1145C13.8398 19.8015 13.8412 19.599 13.8425 19.4094C13.8471 18.7019 13.8496 18.0716 13.8496 17.4121C13.8496 16.7148 13.6664 16.2602 13.4237 16.051C12.7627 15.4812 13.0977 14.3973 13.965 14.2999C16.9314 13.9666 18.3012 12.8177 18.3012 9.63971C18.3012 8.68508 17.9893 7.89571 17.3881 7.23559C17.1301 6.95233 17.0567 6.54659 17.199 6.19087C17.3647 5.77663 17.4354 5.23384 17.2941 4.57702L17.2847 4.57968C16.7928 4.71886 16.1744 5.0198 15.4261 5.5285C15.182 5.69438 14.8772 5.74401 14.5932 5.66413C13.7729 5.43343 12.8913 5.315 12.0012 5.315C11.111 5.315 10.2294 5.43343 9.40916 5.66413C9.12662 5.74359 8.82344 5.69492 8.57997 5.53101C7.8274 5.02439 7.2056 4.72379 6.71079 4.58376C6.56735 5.23696 6.63814 5.77782 6.80336 6.19087C6.94565 6.54659 6.87219 6.95233 6.61423 7.23559C6.01715 7.8912 5.70116 8.69376 5.70116 9.63971C5.70116 12.8116 7.07225 13.9683 10.023 14.2999C10.8883 14.3971 11.2246 15.4769 10.5675 16.0482C10.3751 16.2156 10.1384 16.7802 10.1384 17.4121V20.5611C10.1384 21.5474 9.30356 22.2869 8.17878 22.09C7.63476 21.9948 7.27093 21.4766 7.36613 20.9326C7.43827 20.5204 7.75331 20.2116 8.13841 20.1276V19.1381C7.22829 19.1994 6.47656 19.0498 5.88401 18.6533Z"/></symbol><symbol id="i-linkedin" viewBox="0 0 24 24"><path d="M4.00098 3H20.001C20.5533 3 21.001 3.44772 21.001 4V20C21.001 20.5523 20.5533 21 20.001 21H4.00098C3.44869 21 3.00098 20.5523 3.00098 20V4C3.00098 3.44772 3.44869 3 4.00098 3ZM5.00098 5V19H19.001V5H5.00098ZM7.50098 9C6.67255 9 6.00098 8.32843 6.00098 7.5C6.00098 6.67157 6.67255 6 7.50098 6C8.3294 6 9.00098 6.67157 9.00098 7.5C9.00098 8.32843 8.3294 9 7.50098 9ZM6.50098 10H8.50098V17.5H6.50098V10ZM12.001 10.4295C12.5854 9.86534 13.2665 9.5 14.001 9.5C16.072 9.5 17.501 11.1789 17.501 13.25V17.5H15.501V13.25C15.501 12.2835 14.7175 11.5 13.751 11.5C12.7845 11.5 12.001 12.2835 12.001 13.25V17.5H10.001V10H12.001V10.4295Z"/></symbol><symbol id="i-mail" viewBox="0 0 24 24"><path d="M3 3H21C21.5523 3 22 3.44772 22 4V20C22 20.5523 21.5523 21 21 21H3C2.44772 21 2 20.5523 2 20V4C2 3.44772 2.44772 3 3 3ZM20 7.23792L12.0718 14.338L4 7.21594V19H20V7.23792ZM4.51146 5L12.0619 11.662L19.501 5H4.51146Z"/></symbol><symbol id="i-arrow" viewBox="0 0 24 24"><path d="M16.0037 9.41421L7.39712 18.0208L5.98291 16.6066L14.5895 8H7.00373V6H18.0037V17H16.0037V9.41421Z"/></symbol></svg>
 
+<a class="skip" href="#research"><span data-l="th">ข้ามไปที่เนื้อหา</span><span data-l="en">Skip to content</span></a>
+
 <header class="nav">
   <div class="wrap">
-    <a class="brand" href="#top">Heng</a>
-    <nav class="nav-links" aria-label="Sections">
-      <a href="#research">Research</a>
-      <a href="#tools">Tools</a>
-      <a href="#agents">Agents</a>
+    <a class="brand" href="#top"><span data-l="th">เฮง</span><span data-l="en">Heng</span></a>
+    <nav class="nav-links" data-th-aria-label="หมวดในหน้านี้" data-en-aria-label="Sections" aria-label="หมวดในหน้านี้">
+      <a href="#research"><span data-l="th">งานวิจัย</span><span data-l="en">Research</span></a>
+      <a href="#tools"><span data-l="th">เครื่องมือ</span><span data-l="en">Tools</span></a>
+      <a href="#agents"><span data-l="th">ทีม AI</span><span data-l="en">Agents</span></a>
       <a href="#happlen">Happlen</a>
-      <a href="#contact">Contact</a>
+      <a href="#contact"><span data-l="th">ติดต่อ</span><span data-l="en">Contact</span></a>
     </nav>
-    <button class="theme-btn" type="button" aria-label="Switch light or dark theme">
+    <div class="lang-switch" role="group" data-th-aria-label="เลือกภาษา" data-en-aria-label="Choose language" aria-label="เลือกภาษา">
+      <button type="button" data-set-lang="th" lang="th" aria-label="ภาษาไทย" aria-pressed="true">TH</button>
+      <button type="button" data-set-lang="en" lang="en" aria-label="English" aria-pressed="false">EN</button>
+    </div>
+    <button class="theme-btn" type="button" data-th-aria-label="สลับโหมดสว่างหรือมืด" data-en-aria-label="Switch light or dark theme" aria-label="สลับโหมดสว่างหรือมืด">
       <svg class="icon sun" aria-hidden="true"><use href="#i-sun"/></svg>
       <svg class="icon moon" aria-hidden="true"><use href="#i-moon"/></svg>
     </button>
@@ -40,15 +71,14 @@ try { var t = localStorage.getItem("theme"); if (t === "light" || t === "dark") 
 <main id="top">
 
 <section class="hero stage">
-  <div class="hero-art" role="img" aria-label="A glowing cell nucleus on black"></div>
+  <div class="hero-art" role="img" data-th-aria-label="นิวเคลียสของเซลล์เรืองแสงบนพื้นดำ" data-en-aria-label="A glowing cell nucleus on black" aria-label="นิวเคลียสของเซลล์เรืองแสงบนพื้นดำ"></div>
   <div class="wrap">
-    <p class="eyebrow">Kriengkrai Phongkitkarun · Heng</p>
-    <h1>I teach machines to see cells.</h1>
-    <p class="lead">Then I build the systems that let a small team work like a large one.</p>
-    <p class="lead-th">ผมสอนคอมพิวเตอร์ให้มองเห็นเซลล์ แล้วสร้างระบบที่ทำให้ทีมเล็ก ๆ ทำงานได้เหมือนทีมใหญ่</p>
-    <p class="role">Bioinformatician, Faculty of Medicine Siriraj Hospital, Mahidol University <span>·</span> Co-founder, Happlen</p>
+    <p class="eyebrow"><span data-l="th">เกรียงไกร พงษ์กิจการุณ · เฮง</span><span data-l="en">Kriengkrai Phongkitkarun · Heng</span></p>
+    <h1><span data-l="th">ผมสอนคอมพิวเตอร์<br>ให้มองเห็นเซลล์</span><span data-l="en">I teach machines to see cells.</span></h1>
+    <p class="lead"><span data-l="th">แล้วสร้างระบบที่ทำให้ทีมเล็ก ๆ ทำงานได้เหมือนทีมใหญ่</span><span data-l="en">Then I build the systems that let a small team work like a large one.</span></p>
+    <p class="role"><span data-l="th">นักชีวสารสนเทศ คณะแพทยศาสตร์ศิริราชพยาบาล มหาวิทยาลัยมหิดล <span class="sep">·</span> ผู้ร่วมก่อตั้ง Happlen</span><span data-l="en">Bioinformatician, Faculty of Medicine Siriraj Hospital, Mahidol University <span class="sep">·</span> Co-founder, Happlen</span></p>
     <div class="cta-row">
-      <a class="btn btn-primary" href="#research">See the work</a>
+      <a class="btn btn-primary" href="#research"><span data-l="th">ดูผลงาน</span><span data-l="en">See the work</span></a>
       <a class="btn btn-ghost" href="https://x.com/hengkkpk" rel="me noopener"><svg class="icon" aria-hidden="true"><use href="#i-x"/></svg>@hengkkpk</a>
     </div>
   </div>
@@ -58,24 +88,24 @@ try { var t = localStorage.getItem("theme"); if (t === "light" || t === "dark") 
   <div class="wrap">
     <div class="stat-grid">
       <div class="stat reveal">
-        <div class="k">Research</div>
-        <div class="v">1st<small>author</small></div>
-        <div class="d">Journal of Cell Science, 2025<span class="th">ผู้เขียนชื่อแรก วารสารนานาชาติ</span></div>
+        <div class="k"><span data-l="th">งานวิจัย</span><span data-l="en">Research</span></div>
+        <div class="v"><span data-l="th" class="v-th">ชื่อแรก</span><span data-l="en">1st<small>author</small></span></div>
+        <div class="d"><span data-l="th">ผู้เขียนชื่อแรกใน Journal of Cell Science ปี 2025</span><span data-l="en">Journal of Cell Science, 2025</span></div>
       </div>
       <div class="stat reveal">
-        <div class="k">Infrastructure</div>
-        <div class="v">4<small>nodes</small></div>
-        <div class="d">A lab cluster turned into a self-service app platform<span class="th">คลัสเตอร์ของแลปที่ใครก็เปิดแอปเองได้</span></div>
+        <div class="k"><span data-l="th">โครงสร้างระบบ</span><span data-l="en">Infrastructure</span></div>
+        <div class="v">4<small><span data-l="th">โหนด</span><span data-l="en">nodes</span></small></div>
+        <div class="d"><span data-l="th">คลัสเตอร์ของแลปที่กลายเป็นแพลตฟอร์มให้สมาชิกเปิดแอปใช้เองได้</span><span data-l="en">A lab cluster turned into a self-service app platform</span></div>
       </div>
       <div class="stat reveal">
-        <div class="k">AI for science</div>
-        <div class="v">9<small>skills</small></div>
-        <div class="d">Written so AI assistants follow the lab's rules<span class="th">คู่มือให้ AI ทำงานตามกติกาของแลป</span></div>
+        <div class="k"><span data-l="th">AI เพื่องานวิทยาศาสตร์</span><span data-l="en">AI for science</span></div>
+        <div class="v">9<small><span data-l="th">สกิล</span><span data-l="en">skills</span></small></div>
+        <div class="d"><span data-l="th">เขียนไว้ให้ผู้ช่วย AI ทำงานตามกติกาของแลป</span><span data-l="en">Written so AI assistants follow the lab's rules</span></div>
       </div>
       <div class="stat reveal">
-        <div class="k">Hackathon</div>
+        <div class="k"><span data-l="th">แฮกกาธอน</span><span data-l="en">Hackathon</span></div>
         <div class="v">€3,000</div>
-        <div class="d">1st runner-up, Gill Capital Hackathon 2024<span class="th">รองชนะเลิศอันดับ 1</span></div>
+        <div class="d"><span data-l="th">รองชนะเลิศอันดับ 1 งาน Gill Capital Hackathon 2024</span><span data-l="en">1st runner-up, Gill Capital Hackathon 2024</span></div>
       </div>
     </div>
   </div>
@@ -83,89 +113,93 @@ try { var t = localStorage.getItem("theme"); if (t === "light" || t === "dark") 
 
 <section id="research">
   <div class="wrap">
-    <p class="eyebrow">01 · Research</p>
-    <h2 class="title reveal">Watch a single cell decide to divide.</h2>
-    <p class="lead reveal">I build biosensors, automate the microscope, and write the software that turns time-lapse images into numbers.</p>
-    <p class="lead-th reveal">งานวิจัยของผมคือติดตามโปรตีนในเซลล์เดียวตามเวลา เพื่อดูว่าเซลล์ตัดสินใจแบ่งตัวอย่างไร</p>
+    <p class="eyebrow"><span data-l="th">01 · งานวิจัย</span><span data-l="en">01 · Research</span></p>
+    <h2 class="title reveal"><span data-l="th">เฝ้าดูเซลล์เดียว<span class="nw">ตัดสินใจแบ่งตัว</span></span><span data-l="en">Watch a single cell decide to divide.</span></h2>
+    <p class="lead reveal"><span data-l="th">ผมสร้างไบโอเซนเซอร์ ทำให้กล้องจุลทรรศน์ถ่ายภาพได้เอง และเขียนซอฟต์แวร์ที่แปลงภาพถ่ายต่อเนื่องตามเวลาให้เป็นตัวเลข</span><span data-l="en">I build biosensors, automate the microscope, and write the software that turns time-lapse images into numbers.</span></p>
 
     <div class="list">
       <a class="row reveal" href="https://doi.org/10.1242/jcs.263749" rel="noopener">
         <span class="yr">2025</span>
-        <span class="t">A chemically tunable FOXM1–DHFR sensor reveals the direct influence of FOXM1 on the cell cycle</span>
-        <span class="meta"><b>First author</b>Journal of Cell Science</span>
+        <span class="t" lang="en">A chemically tunable FOXM1–DHFR sensor reveals the direct influence of FOXM1 on the cell cycle</span>
+        <span class="meta"><b><span data-l="th">ผู้เขียนชื่อแรก</span><span data-l="en">First author</span></b>Journal of Cell Science</span>
         <svg class="icon go" aria-hidden="true"><use href="#i-arrow"/></svg>
       </a>
       <a class="row reveal" href="https://doi.org/10.1111/cpr.70019" rel="noopener">
         <span class="yr">2025</span>
-        <span class="t">Exploring the single-cell dynamics of FOXM1 under cell cycle perturbations</span>
-        <span class="meta"><b>Co-author</b>Cell Proliferation</span>
+        <span class="t" lang="en">Exploring the single-cell dynamics of FOXM1 under cell cycle perturbations</span>
+        <span class="meta"><b><span data-l="th">ผู้เขียนร่วม</span><span data-l="en">Co-author</span></b>Cell Proliferation</span>
         <svg class="icon go" aria-hidden="true"><use href="#i-arrow"/></svg>
       </a>
       <a class="row reveal" href="https://doi.org/10.64898/2026.05.08.723767" rel="noopener">
         <span class="yr">2026</span>
-        <span class="t">A genome-wide RNAi screen identifies host cell cycle regulation as a determinant of <em>Orientia tsutsugamushi</em> infection</span>
-        <span class="meta"><b>Co-author</b>bioRxiv preprint</span>
+        <span class="t" lang="en">A genome-wide RNAi screen identifies host cell cycle regulation as a determinant of <em>Orientia tsutsugamushi</em> infection</span>
+        <span class="meta"><b><span data-l="th">ผู้เขียนร่วม</span><span data-l="en">Co-author</span></b><span data-l="th">บทความ preprint บน bioRxiv</span><span data-l="en">bioRxiv preprint</span></span>
         <svg class="icon go" aria-hidden="true"><use href="#i-arrow"/></svg>
       </a>
       <a class="row reveal" href="https://doi.org/10.1158/1538-7445.AM2024-6947" rel="noopener">
         <span class="yr">2024</span>
-        <span class="t">Two abstracts at AACR Annual Meeting 2024: FOXM1 single-cell dynamics, and epigenetic drugs in anti-cholangiocarcinoma immune cells</span>
-        <span class="meta"><b>Co-author</b>Cancer Research supplement</span>
+        <span class="t"><span data-l="th">บทคัดย่อสองเรื่องในงานประชุม AACR Annual Meeting 2024 เรื่องพลวัตของ FOXM1 ในเซลล์เดียว และยาเอพิเจเนติกส์กับเซลล์ภูมิคุ้มกันที่ต้านมะเร็งท่อน้ำดี</span><span data-l="en">Two abstracts at AACR Annual Meeting 2024: FOXM1 single-cell dynamics, and epigenetic drugs in anti-cholangiocarcinoma immune cells</span></span>
+        <span class="meta"><b><span data-l="th">ผู้เขียนร่วม</span><span data-l="en">Co-author</span></b><span data-l="th">ฉบับเสริมของ Cancer Research</span><span data-l="en">Cancer Research supplement</span></span>
         <svg class="icon go" aria-hidden="true"><use href="#i-arrow"/></svg>
       </a>
       <a class="row reveal" href="https://doi.org/10.14416/j.kmutnb.2018.01.011" rel="noopener">
         <span class="yr">2018</span>
-        <span class="t">Dispersion of basalt fibers in solution</span>
-        <span class="meta"><b>Co-author</b>KMUTNB Journal</span>
+        <span class="t" lang="en">Dispersion of basalt fibers in solution</span>
+        <span class="meta"><b><span data-l="th">ผู้เขียนร่วม</span><span data-l="en">Co-author</span></b>KMUTNB Journal</span>
         <svg class="icon go" aria-hidden="true"><use href="#i-arrow"/></svg>
       </a>
     </div>
+    <p class="note"><span data-l="th">ชื่อบทความคงไว้เป็นภาษาอังกฤษตามที่ตีพิมพ์</span><span data-l="en">Paper titles are shown as published.</span></p>
   </div>
 </section>
 
-<section class="numbers" style="padding-top:0;border-bottom:0">
+<section class="numbers thesis">
   <div class="wrap split">
     <div class="reveal">
-      <p class="eyebrow">Master's thesis · Biomedical Engineering, Mahidol</p>
-      <h2 class="title" style="font-size:clamp(34px,4.6vw,60px)">The bench, automated.</h2>
-      <p class="lead-th">วิทยานิพนธ์ปริญญาโท: พัฒนาเซนเซอร์ FOXM1 ที่ปรับด้วยสารเคมีได้ และสร้างเครื่องมือให้การถ่ายภาพเซลล์ทำงานเองได้</p>
+      <p class="eyebrow"><span data-l="th">วิทยานิพนธ์ปริญญาโท · วิศวกรรมชีวการแพทย์ มหิดล</span><span data-l="en">Master's thesis · Biomedical Engineering, Mahidol</span></p>
+      <h2 class="title"><span data-l="th">ให้งานแลปเดินเอง</span><span data-l="en">The bench, automated.</span></h2>
+      <p class="lead"><span data-l="th">พัฒนาเซนเซอร์ FOXM1 ที่ปรับได้ด้วยสารเคมี และสร้างเครื่องมือที่ทำให้การถ่ายภาพเซลล์ทำงานได้เอง</span><span data-l="en">A chemically tunable FOXM1 sensor, and the tools that let cell imaging run on its own.</span></p>
     </div>
     <ol class="steps reveal">
-      <li><b>A parallel protocol</b><span>for cell cycle synchronisation.</span></li>
-      <li><b>A robotic workstation</b><span>for imaging living cells at many time points automatically.</span></li>
-      <li><b>A tracking app</b><span>for semi-automatic cell tracking, open source on GitHub as <a href="https://github.com/hengkp/celltracking" style="color:var(--accent)">celltracking</a>.</span></li>
+      <li><b><span data-l="th">โปรโตคอลแบบขนาน</span><span data-l="en">A parallel protocol</span></b><span data-l="th">สำหรับจัดให้เซลล์อยู่ในวัฏจักรระยะเดียวกัน</span><span data-l="en">for cell cycle synchronisation.</span></li>
+      <li><b><span data-l="th">สถานีงานหุ่นยนต์</span><span data-l="en">A robotic workstation</span></b><span data-l="th">ถ่ายภาพเซลล์ที่ยังมีชีวิตได้หลายช่วงเวลาโดยอัตโนมัติ</span><span data-l="en">for imaging living cells at many time points automatically.</span></li>
+      <li><b><span data-l="th">แอปติดตามเซลล์</span><span data-l="en">A tracking app</span></b><span data-l="th">ติดตามเซลล์แบบกึ่งอัตโนมัติ เปิดซอร์สบน GitHub ในชื่อ <a href="https://github.com/hengkp/celltracking">celltracking</a></span><span data-l="en">for semi-automatic cell tracking, open source on GitHub as <a href="https://github.com/hengkp/celltracking">celltracking</a>.</span></li>
     </ol>
   </div>
 </section>
 
-<section id="tools" style="background:var(--bg-2)">
+<section id="tools" class="alt">
   <div class="wrap">
-    <p class="eyebrow">02 · Tools for scientists</p>
-    <h2 class="title reveal">Fewer clicks between a slide and a result.</h2>
-    <p class="lead-th reveal">เครื่องมือที่ผมเขียนให้คนในแลปใช้จริงทุกวัน</p>
+    <p class="eyebrow"><span data-l="th">02 · เครื่องมือสำหรับนักวิทยาศาสตร์</span><span data-l="en">02 · Tools for scientists</span></p>
+    <h2 class="title reveal"><span data-l="th">คลิกน้อยลง <span class="nw">จากสไลด์ถึงผลลัพธ์</span></span><span data-l="en">Fewer clicks between a slide and a result.</span></h2>
+    <p class="lead reveal"><span data-l="th">เครื่องมือที่ผมเขียนให้คนในแลปใช้จริงทุกวัน</span><span data-l="en">Tools I wrote that people in the lab use every day.</span></p>
 
     <div class="work">
-      <article class="card reveal" style="background:var(--bg)">
+      <article class="card reveal">
         <div class="body">
-          <span class="idx">01 · QuPath · open source</span>
+          <span class="idx"><span data-l="th">01 · QuPath · โอเพนซอร์ส</span><span data-l="en">01 · QuPath · open source</span></span>
           <h3>CoreAlign TMA</h3>
-          <p>Finds every core on a tissue microarray, turns each one the right way up, and exports images ready for analysis. It stops and asks a person when it is unsure.</p>
-          <p class="th">หาชิ้นเนื้อทุกจุดบนสไลด์ หมุนให้ตรง แล้วส่งออกภาพพร้อมวิเคราะห์ จุดไหนไม่แน่ใจจะถามคนก่อน</p>
-          <div class="metric"><span class="v">1 run</span><span class="k">per slide in version 2.0, down from 3 to 4</span></div>
-          <a class="link" href="https://hengkp.github.io/corealign-tma/" rel="noopener">Visit CoreAlign <svg class="icon" aria-hidden="true"><use href="#i-arrow"/></svg></a>
+          <p><span data-l="th">หาชิ้นเนื้อทุกชิ้นบนสไลด์ tissue microarray หมุนแต่ละชิ้นให้ตั้งตรง แล้วส่งออกภาพที่พร้อมวิเคราะห์ ถ้าไม่แน่ใจตรงไหน จะหยุดถามคนก่อน</span><span data-l="en">Finds every core on a tissue microarray, turns each one the right way up, and exports images ready for analysis. It stops and asks a person when it is unsure.</span></p>
+          <div class="metric"><span class="v"><span data-l="th">1 รอบ</span><span data-l="en">1 run</span></span><span class="k"><span data-l="th">ต่อสไลด์ในเวอร์ชัน 2.0 จากเดิม 3 ถึง 4 รอบ</span><span data-l="en">per slide in version 2.0, down from 3 to 4</span></span></div>
+          <a class="link" href="https://hengkp.github.io/corealign-tma/" rel="noopener"><span data-l="th">เปิด CoreAlign</span><span data-l="en">Visit CoreAlign</span> <svg class="icon" aria-hidden="true"><use href="#i-arrow"/></svg></a>
         </div>
-        <div class="shot"><img src="assets/img/shot-corealign.jpg" alt="CoreAlign TMA website" width="1440" height="900"></div>
+        <div class="shot"><img src="assets/img/shot-corealign.jpg" data-th-alt="เว็บไซต์ CoreAlign TMA" data-en-alt="CoreAlign TMA website" alt="เว็บไซต์ CoreAlign TMA" width="1440" height="900"></div>
       </article>
 
-      <article class="card reveal" style="background:var(--bg)">
+      <article class="card reveal">
         <div class="body">
-          <span class="idx">02 · Lab platform</span>
+          <span class="idx"><span data-l="th">02 · แพลตฟอร์มของแลป</span><span data-l="en">02 · Lab platform</span></span>
           <h3>Nucleus</h3>
-          <p>A self-service front door to the laboratory's 4-node Slurm cluster and shared storage. Members launch JupyterLab, RStudio or a Nextflow pipeline from a web catalog, and each app runs under their own account.</p>
-          <p class="th">ประตูเดียวสู่คลัสเตอร์และคลังข้อมูลของแลป สมาชิกกดเปิดแอปหรือ pipeline ได้เองจากหน้าเว็บ</p>
-          <div class="metric"><span class="v">1,147</span><span class="k">commits in the platform repository</span></div>
+          <p><span data-l="th">ประตูบริการตัวเองสู่คลัสเตอร์ Slurm 4 โหนดและที่เก็บข้อมูลกลางของแลป สมาชิกเปิด JupyterLab, RStudio หรือ pipeline ของ Nextflow ได้เองจากแคตตาล็อกบนเว็บ และทุกแอปรันภายใต้บัญชีของเจ้าตัว</span><span data-l="en">A self-service front door to the laboratory's 4-node Slurm cluster and shared storage. Members launch JupyterLab, RStudio or a Nextflow pipeline from a web catalog, and each app runs under their own account.</span></p>
+          <div class="metric"><span class="v">1,147</span><span class="k"><span data-l="th">คอมมิตใน repository ของแพลตฟอร์ม</span><span data-l="en">commits in the platform repository</span></span></div>
         </div>
-        <div class="shot type"><div class="code"><span class="w">AppHub</span>   launch an app or pipeline
+        <div class="shot type"><div class="code" data-l="th"><span class="w">AppHub</span>   เปิดแอปหรือ pipeline
+         <span class="a">→</span> รันในชื่อคุณ บนเครื่องคำนวณ
+<span class="w">MapDrive</span> ต่อ NAS ของแลปเป็นไดรฟ์ธรรมดา
+<span class="w">Identity</span> ล็อกอินเดียว ยืนยันสองขั้นตอน
+<span class="w">Skills</span>   คู่มือ 9 ชุดสำหรับผู้ช่วย AI
+         <span class="a">→</span> ไม่มีตัวเลขที่แต่งขึ้น
+         <span class="a">→</span> ทุกค่ามาจากการรันจริง</div><div class="code" data-l="en"><span class="w">AppHub</span>   launch an app or pipeline
          <span class="a">→</span> runs as you, on a compute node
 <span class="w">MapDrive</span> the lab NAS as a normal drive
 <span class="w">Identity</span> one login, two-step verified
@@ -174,15 +208,14 @@ try { var t = localStorage.getItem("theme"); if (t === "light" || t === "dark") 
          <span class="a">→</span> every value from a real run</div></div>
       </article>
 
-      <article class="card reveal" style="background:var(--bg)">
+      <article class="card reveal">
         <div class="body">
           <span class="idx">03 · Vision transformers</span>
           <h3>attention-heatmaps</h3>
-          <p>A small command-line tool that draws paper-style attention and PCA patch maps from DINO, DINOv2 and DINOv3, so you can see what a vision model looks at.</p>
-          <p class="th">เครื่องมือวาดภาพให้เห็นว่าโมเดลภาพกำลังมองตรงไหน</p>
-          <a class="link" href="https://github.com/hengkp/attention-heatmaps" rel="noopener">View on GitHub <svg class="icon" aria-hidden="true"><use href="#i-arrow"/></svg></a>
+          <p><span data-l="th">เครื่องมือ command line ขนาดเล็กที่วาดแผนที่ attention และแผนที่แพตช์แบบ PCA สไตล์ในเปเปอร์ จาก DINO, DINOv2 และ DINOv3 ให้เห็นว่าโมเดลภาพกำลังมองตรงไหน</span><span data-l="en">A small command-line tool that draws paper-style attention and PCA patch maps from DINO, DINOv2 and DINOv3, so you can see what a vision model looks at.</span></p>
+          <a class="link" href="https://github.com/hengkp/attention-heatmaps" rel="noopener"><span data-l="th">ดูบน GitHub</span><span data-l="en">View on GitHub</span> <svg class="icon" aria-hidden="true"><use href="#i-arrow"/></svg></a>
         </div>
-        <div class="shot type"><div class="code"><span class="w">$ python patchmap.py</span> cell.png
+        <div class="shot type"><div class="code" lang="en"><span class="w">$ python patchmap.py</span> cell.png
   --model <span class="a">dinov2</span>
   --mode  <span class="a">attention</span> | <span class="a">pca</span>
 
@@ -195,81 +228,72 @@ try { var t = localStorage.getItem("theme"); if (t === "light" || t === "dark") 
 
 <section id="agents" class="stage">
   <div class="wrap">
-    <p class="eyebrow">03 · Agents</p>
-    <h2 class="title reveal">One person. A team of agents.</h2>
-    <p class="lead reveal">I run my work across a small fleet of machines and a set of AI agents that talk to each other, check each other, and report back.</p>
-    <p class="lead-th reveal">ผมทำงานกับ AI หลายตัวที่ส่งงานต่อกัน ตรวจงานกันเอง และรายงานผลกลับมาที่มือถือ</p>
+    <p class="eyebrow"><span data-l="th">03 · ทีม AI</span><span data-l="en">03 · Agents</span></p>
+    <h2 class="title reveal"><span data-l="th">คนเดียว แต่มีทีม AI</span><span data-l="en">One person. A team of agents.</span></h2>
+    <p class="lead reveal"><span data-l="th">ผมทำงานผ่านคอมพิวเตอร์ไม่กี่เครื่อง กับ AI หลายตัวที่คุยกันเอง ตรวจงานกันเอง แล้วรายงานผลกลับมา</span><span data-l="en">I run my work across a small fleet of machines and a set of AI agents that talk to each other, check each other, and report back.</span></p>
 
     <div class="flow">
       <div class="reveal">
-        <span class="n">01 · DESIGN</span>
-        <h4>Claude plans</h4>
-        <p>Breaks the job down, writes the brief and the pass or fail check before any code is written.</p>
-        <p class="th">แตกงาน เขียนโจทย์ และกำหนดว่าแบบไหนถือว่าผ่าน</p>
+        <span class="n"><span data-l="th">01 · ออกแบบ</span><span data-l="en">01 · DESIGN</span></span>
+        <h4><span data-l="th">Claude วางแผน</span><span data-l="en">Claude plans</span></h4>
+        <p><span data-l="th">แตกงานเป็นชิ้น เขียนโจทย์ และกำหนดเกณฑ์ผ่านหรือไม่ผ่าน ก่อนจะเริ่มเขียนโค้ดสักบรรทัด</span><span data-l="en">Breaks the job down, writes the brief and the pass or fail check before any code is written.</span></p>
       </div>
       <div class="reveal">
-        <span class="n">02 · BUILD</span>
-        <h4>Codex builds</h4>
-        <p>Two bridges I wrote let one model hand work to the other on the same machine.</p>
-        <p class="th">สะพานสองเส้นที่ผมเขียน ให้ AI สองค่ายส่งงานให้กันได้</p>
+        <span class="n"><span data-l="th">02 · ลงมือสร้าง</span><span data-l="en">02 · BUILD</span></span>
+        <h4><span data-l="th">Codex สร้าง</span><span data-l="en">Codex builds</span></h4>
+        <p><span data-l="th">สะพานสองเส้นที่ผมเขียน ทำให้โมเดลหนึ่งส่งงานต่อให้อีกโมเดลได้บนเครื่องเดียวกัน</span><span data-l="en">Two bridges I wrote let one model hand work to the other on the same machine.</span></p>
       </div>
       <div class="reveal">
-        <span class="n">03 · REVIEW</span>
-        <h4>The other one checks</h4>
-        <p>Code written by one model is reviewed by the other. The author is never the only reviewer.</p>
-        <p class="th">คนเขียนกับคนตรวจเป็นคนละตัวเสมอ</p>
+        <span class="n"><span data-l="th">03 · ตรวจ</span><span data-l="en">03 · REVIEW</span></span>
+        <h4><span data-l="th">อีกตัวเป็นคนตรวจ</span><span data-l="en">The other one checks</span></h4>
+        <p><span data-l="th">โค้ดที่โมเดลหนึ่งเขียน อีกโมเดลเป็นคนตรวจ คนเขียนจะไม่ใช่คนตรวจเพียงคนเดียว</span><span data-l="en">Code written by one model is reviewed by the other. The author is never the only reviewer.</span></p>
       </div>
       <div class="reveal">
-        <span class="n">04 · REPORT</span>
-        <h4>A chat message comes back</h4>
-        <p>A job typed into a team chat is picked up by a Mac mini within two minutes, and the result returns as a link.</p>
-        <p class="th">พิมพ์สั่งงานในแชท ภายในสองนาทีเครื่องที่บ้านหยิบไปทำ แล้วส่งลิงก์ผลกลับ</p>
+        <span class="n"><span data-l="th">04 · รายงาน</span><span data-l="en">04 · REPORT</span></span>
+        <h4><span data-l="th">ผลส่งกลับมาในแชท</span><span data-l="en">A chat message comes back</span></h4>
+        <p><span data-l="th">พิมพ์สั่งงานในแชทของทีม ภายในสองนาที Mac mini จะหยิบงานไปทำ แล้วส่งผลกลับมาเป็นลิงก์</span><span data-l="en">A job typed into a team chat is picked up by a Mac mini within two minutes, and the result returns as a link.</span></p>
       </div>
     </div>
 
-    <p class="rule reveal">Every failure is written down with its symptom and its fix. <span>The system reads its own mistakes before the next run.</span></p>
+    <p class="rule reveal"><span data-l="th">ทุกครั้งที่พลาด จะจดทั้งอาการและวิธีแก้ไว้ <span class="dim">ก่อนรันรอบถัดไป ระบบจะอ่านความผิดพลาดของตัวเองก่อนเสมอ</span></span><span data-l="en">Every failure is written down with its symptom and its fix. <span class="dim">The system reads its own mistakes before the next run.</span></span></p>
   </div>
 </section>
 
 <section id="happlen">
   <div class="wrap">
     <p class="eyebrow">04 · Happlen</p>
-    <h2 class="title reveal">Built with Ple. Shipped in public.</h2>
-    <p class="lead reveal">Happlen is the company Ple and I started. Two of its products are live and free to try today.</p>
-    <p class="lead-th reveal">Happlen คือบริษัทที่ผมกับเปิ้ลตั้งขึ้น ตอนนี้มีสองผลิตภัณฑ์ที่เปิดให้ใช้ฟรี</p>
+    <h2 class="title reveal"><span data-l="th">สร้างกับเปิ้ล <span class="nw">ปล่อยให้ทุกคนใช้</span></span><span data-l="en">Built with Ple. Shipped in public.</span></h2>
+    <p class="lead reveal"><span data-l="th">Happlen คือบริษัทที่ผมกับเปิ้ลตั้งขึ้น ตอนนี้มีสองผลิตภัณฑ์ที่เปิดให้ลองใช้ฟรีแล้ว</span><span data-l="en">Happlen is the company Ple and I started. Two of its products are live and free to try today.</span></p>
 
     <div class="work">
       <article class="card reveal">
         <div class="body">
-          <span class="idx">01 · Live · rtcf.happlen.com</span>
+          <span class="idx"><span data-l="th">01 · ใช้งานได้แล้ว · rtcf.happlen.com</span><span data-l="en">01 · Live · rtcf.happlen.com</span></span>
           <h3>RTCF</h3>
-          <p>Turns a rough request into a clear prompt in four parts: Role, Task, Context, Format. Works in Thai and English, on the web, and inside Claude and ChatGPT as a connector.</p>
-          <p class="th">พิมพ์สั้น ๆ เป็นภาษาไทย แล้วได้คำสั่งที่ AI เข้าใจชัด</p>
-          <div class="metric"><span class="v">4 parts</span><span class="k">Role · Task · Context · Format</span></div>
-          <a class="link" href="https://rtcf.happlen.com" rel="noopener">Try RTCF <svg class="icon" aria-hidden="true"><use href="#i-arrow"/></svg></a>
+          <p><span data-l="th">เปลี่ยนคำขอคร่าว ๆ ให้เป็นพรอมต์ที่ชัดเจนในสี่ส่วน คือ Role, Task, Context และ Format ใช้ได้ทั้งภาษาไทยและอังกฤษ ทั้งบนเว็บ และเป็น connector ใน Claude กับ ChatGPT</span><span data-l="en">Turns a rough request into a clear prompt in four parts: Role, Task, Context, Format. Works in Thai and English, on the web, and inside Claude and ChatGPT as a connector.</span></p>
+          <div class="metric"><span class="v"><span data-l="th">4 ส่วน</span><span data-l="en">4 parts</span></span><span class="k">Role · Task · Context · Format</span></div>
+          <a class="link" href="https://rtcf.happlen.com" rel="noopener"><span data-l="th">ลองใช้ RTCF</span><span data-l="en">Try RTCF</span> <svg class="icon" aria-hidden="true"><use href="#i-arrow"/></svg></a>
         </div>
-        <div class="shot"><img src="assets/img/shot-rtcf.jpg" alt="RTCF prompt improver website" width="1440" height="900"></div>
+        <div class="shot"><img src="assets/img/shot-rtcf.jpg" data-th-alt="เว็บไซต์ RTCF ตัวช่วยปรับพรอมต์" data-en-alt="RTCF prompt improver website" alt="เว็บไซต์ RTCF ตัวช่วยปรับพรอมต์" width="1440" height="900"></div>
       </article>
       <article class="card reveal">
         <div class="body">
-          <span class="idx">02 · Live · learnbuddy.happlen.com</span>
+          <span class="idx"><span data-l="th">02 · ใช้งานได้แล้ว · learnbuddy.happlen.com</span><span data-l="en">02 · Live · learnbuddy.happlen.com</span></span>
           <h3>LearnBuddy</h3>
-          <p>Interactive lessons that turn a hard subject into something you can play with, free for every chapter.</p>
-          <p class="th">บทเรียนแบบลงมือเล่นได้ เรียนฟรีทุกบท</p>
-          <a class="link" href="https://learnbuddy.happlen.com" rel="noopener">Open LearnBuddy <svg class="icon" aria-hidden="true"><use href="#i-arrow"/></svg></a>
+          <p><span data-l="th">บทเรียนแบบโต้ตอบที่เปลี่ยนวิชายาก ๆ ให้เป็นสิ่งที่ลงมือเล่นได้ เรียนฟรีทุกบท</span><span data-l="en">Interactive lessons that turn a hard subject into something you can play with, free for every chapter.</span></p>
+          <a class="link" href="https://learnbuddy.happlen.com" rel="noopener"><span data-l="th">เปิด LearnBuddy</span><span data-l="en">Open LearnBuddy</span> <svg class="icon" aria-hidden="true"><use href="#i-arrow"/></svg></a>
         </div>
-        <div class="shot"><img src="assets/img/shot-learnbuddy.jpg" alt="LearnBuddy website" width="1440" height="900"></div>
+        <div class="shot"><img src="assets/img/shot-learnbuddy.jpg" data-th-alt="เว็บไซต์ LearnBuddy" data-en-alt="LearnBuddy website" alt="เว็บไซต์ LearnBuddy" width="1440" height="900"></div>
       </article>
       <article class="card reveal">
         <div class="body">
           <span class="idx">03 · Super AI Engineer Season 6</span>
-          <h3>Four hackathons, written up</h3>
-          <p>Data storytelling on Bangkok rail, an OCR pipeline for election forms, a Thai RAG system, and five AI problems in 24 hours. Every notebook is open.</p>
-          <p class="th">บันทึกการแข่งขันสี่รายการ พร้อมโน้ตบุ๊กให้ดาวน์โหลด</p>
-          <div class="metric"><span class="v">5 in 24 h</span><span class="k">vision, language, signal, tabular and multimodal tasks</span></div>
-          <a class="link" href="https://hengkp.github.io/superaiss6/" rel="noopener">Read the showcase <svg class="icon" aria-hidden="true"><use href="#i-arrow"/></svg></a>
+          <h3><span data-l="th">บันทึกแฮกกาธอน<span class="nw">สี่รายการ</span></span><span data-l="en">Four hackathons, written up</span></h3>
+          <p><span data-l="th">เล่าเรื่องด้วยข้อมูลระบบรางในกรุงเทพฯ ระบบ OCR อ่านแบบฟอร์มเลือกตั้ง ระบบ RAG ภาษาไทย และโจทย์ AI ห้าข้อใน 24 ชั่วโมง ทุกโน้ตบุ๊กเปิดให้ดูได้</span><span data-l="en">Data storytelling on Bangkok rail, an OCR pipeline for election forms, a Thai RAG system, and five AI problems in 24 hours. Every notebook is open.</span></p>
+          <div class="metric"><span class="v"><span data-l="th">5 ข้อใน 24 ชม.</span><span data-l="en">5 in 24 h</span></span><span class="k"><span data-l="th">ภาพ ภาษา สัญญาณ ข้อมูลตาราง และหลายรูปแบบรวมกัน</span><span data-l="en">vision, language, signal, tabular and multimodal tasks</span></span></div>
+          <a class="link" href="https://hengkp.github.io/superaiss6/" rel="noopener"><span data-l="th">อ่านผลงาน</span><span data-l="en">Read the showcase</span> <svg class="icon" aria-hidden="true"><use href="#i-arrow"/></svg></a>
         </div>
-        <div class="shot"><img src="assets/img/shot-superai.jpg" alt="Super AI Engineer Season 6 showcase website" width="1440" height="900"></div>
+        <div class="shot"><img src="assets/img/shot-superai.jpg" data-th-alt="เว็บไซต์รวมผลงาน Super AI Engineer Season 6" data-en-alt="Super AI Engineer Season 6 showcase website" alt="เว็บไซต์รวมผลงาน Super AI Engineer Season 6" width="1440" height="900"></div>
       </article>
     </div>
   </div>
@@ -277,39 +301,39 @@ try { var t = localStorage.getItem("theme"); if (t === "light" || t === "dark") 
 
 <section class="belief stage">
   <div class="wrap">
-    <p class="eyebrow">What I believe</p>
-    <blockquote class="reveal">Technology should free people. <span>Not hook them.</span></blockquote>
-    <p class="th reveal">เทคโนโลยีควรทำให้คนมีชีวิตนอกจอมากขึ้น ไม่ใช่ติดอยู่ในจอนานขึ้น</p>
+    <p class="eyebrow"><span data-l="th">สิ่งที่ผมเชื่อ</span><span data-l="en">What I believe</span></p>
+    <blockquote class="reveal"><span data-l="th">เทคโนโลยีควร<span class="nw">ปลดปล่อยคน</span> <span class="dim nw">ไม่ใช่ทำให้คนติด</span></span><span data-l="en">Technology should free people. <span class="dim">Not hook them.</span></span></blockquote>
+    <p class="sub reveal"><span data-l="th">ให้คนมีชีวิตนอกจอมากขึ้น ไม่ใช่ติดอยู่ในจอนานขึ้น</span><span data-l="en">More life away from the screen, not more time stuck on it.</span></p>
   </div>
 </section>
 
 <section id="path">
   <div class="wrap">
-    <p class="eyebrow">05 · Path</p>
-    <h2 class="title reveal">Chemical engineer. Then cells. Then code.</h2>
+    <p class="eyebrow"><span data-l="th">05 · เส้นทาง</span><span data-l="en">05 · Path</span></p>
+    <h2 class="title reveal"><span data-l="th">เริ่มจากวิศวกรเคมี <span class="nw">ต่อด้วยเซลล์</span> <span class="nw">แล้วจึงเป็นโค้ด</span></span><span data-l="en">Chemical engineer. Then cells. Then code.</span></h2>
     <div class="path">
-      <div class="row reveal"><span class="yr">Now</span><span class="t">Bioinformatician</span><span class="meta">Faculty of Medicine Siriraj Hospital, Mahidol University</span></div>
-      <div class="row reveal"><span class="yr">Now</span><span class="t">Co-founder</span><span class="meta">Happlen</span></div>
-      <div class="row reveal"><span class="yr">2026</span><span class="t">Super AI Engineer, Season 6</span><span class="meta">AI Association of Thailand</span></div>
+      <div class="row reveal"><span class="yr"><span data-l="th">ปัจจุบัน</span><span data-l="en">Now</span></span><span class="t"><span data-l="th">นักชีวสารสนเทศ</span><span data-l="en">Bioinformatician</span></span><span class="meta"><span data-l="th">คณะแพทยศาสตร์ศิริราชพยาบาล มหาวิทยาลัยมหิดล</span><span data-l="en">Faculty of Medicine Siriraj Hospital, Mahidol University</span></span></div>
+      <div class="row reveal"><span class="yr"><span data-l="th">ปัจจุบัน</span><span data-l="en">Now</span></span><span class="t"><span data-l="th">ผู้ร่วมก่อตั้ง</span><span data-l="en">Co-founder</span></span><span class="meta">Happlen</span></div>
+      <div class="row reveal"><span class="yr">2026</span><span class="t"><span data-l="th">Super AI Engineer รุ่นที่ 6</span><span data-l="en">Super AI Engineer, Season 6</span></span><span class="meta"><span data-l="th">สมาคมปัญญาประดิษฐ์ประเทศไทย</span><span data-l="en">AI Association of Thailand</span></span></div>
       <div class="row reveal"><span class="yr">2024</span><span class="t">AWS Certified Cloud Practitioner</span><span class="meta">Amazon Web Services</span></div>
-      <div class="row reveal"><span class="yr">2024</span><span class="t">1st runner-up, Gill Capital Hackathon</span><span class="meta">An AI shop assistant that matches clothes to skin tone and occasion</span></div>
-      <div class="row reveal"><span class="yr">2024</span><span class="t">Full-stack developer</span><span class="meta">Sor.Watana Panich, the family hardware shop: a pilot web app for sales and stock</span></div>
-      <div class="row reveal"><span class="yr">M.Eng.</span><span class="t">Biomedical Engineering</span><span class="meta">Mahidol University</span></div>
-      <div class="row reveal"><span class="yr">B.Eng.</span><span class="t">Chemical Engineering</span><span class="meta">Mahidol University</span></div>
+      <div class="row reveal"><span class="yr">2024</span><span class="t"><span data-l="th">รองชนะเลิศอันดับ 1 Gill Capital Hackathon</span><span data-l="en">1st runner-up, Gill Capital Hackathon</span></span><span class="meta"><span data-l="th">ผู้ช่วยขายของด้วย AI ที่จับคู่เสื้อผ้ากับสีผิวและโอกาสที่จะใส่</span><span data-l="en">An AI shop assistant that matches clothes to skin tone and occasion</span></span></div>
+      <div class="row reveal"><span class="yr">2024</span><span class="t"><span data-l="th">นักพัฒนา full-stack</span><span data-l="en">Full-stack developer</span></span><span class="meta"><span data-l="th">ร้าน ส.วัฒนา ร้านฮาร์ดแวร์ของครอบครัว: เว็บแอปนำร่องสำหรับงานขายและสต็อก</span><span data-l="en">Sor.Watana Panich, the family hardware shop: a pilot web app for sales and stock</span></span></div>
+      <div class="row reveal"><span class="yr"><span data-l="th">ป.โท</span><span data-l="en">M.Eng.</span></span><span class="t"><span data-l="th">วิศวกรรมชีวการแพทย์</span><span data-l="en">Biomedical Engineering</span></span><span class="meta"><span data-l="th">มหาวิทยาลัยมหิดล</span><span data-l="en">Mahidol University</span></span></div>
+      <div class="row reveal"><span class="yr"><span data-l="th">ป.ตรี</span><span data-l="en">B.Eng.</span></span><span class="t"><span data-l="th">วิศวกรรมเคมี</span><span data-l="en">Chemical Engineering</span></span><span class="meta"><span data-l="th">มหาวิทยาลัยมหิดล</span><span data-l="en">Mahidol University</span></span></div>
     </div>
   </div>
 </section>
 
-<section id="contact" class="contact" style="background:var(--bg-2)">
+<section id="contact" class="contact alt">
   <div class="wrap">
-    <p class="eyebrow">06 · Contact</p>
-    <h2 class="title reveal">Say hello.</h2>
-    <p class="lead-th reveal">ทักมาคุยเรื่องงานวิจัย เครื่องมือ หรือ AI ได้ทุกช่องทาง</p>
+    <p class="eyebrow"><span data-l="th">06 · ติดต่อ</span><span data-l="en">06 · Contact</span></p>
+    <h2 class="title reveal"><span data-l="th">ทักมาคุยกัน</span><span data-l="en">Say hello.</span></h2>
+    <p class="lead reveal"><span data-l="th">ทักมาคุยเรื่องงานวิจัย เครื่องมือ หรือ AI ได้ทุกช่องทาง</span><span data-l="en">Talk to me about research, tools or AI on any of these channels.</span></p>
     <div class="links">
       <a href="https://x.com/hengkkpk" rel="me noopener"><svg class="icon" aria-hidden="true"><use href="#i-x"/></svg><span><small>X</small><strong>@hengkkpk</strong></span></a>
       <a href="https://github.com/hengkp" rel="me noopener"><svg class="icon" aria-hidden="true"><use href="#i-github"/></svg><span><small>GitHub</small><strong>hengkp</strong></span></a>
       <a href="https://www.linkedin.com/in/hengkp" rel="me noopener"><svg class="icon" aria-hidden="true"><use href="#i-linkedin"/></svg><span><small>LinkedIn</small><strong>in/hengkp</strong></span></a>
-      <a href="mailto:kriengkrai.pho@gmail.com"><svg class="icon" aria-hidden="true"><use href="#i-mail"/></svg><span><small>Email</small><strong>kriengkrai.pho@gmail.com</strong></span></a>
+      <a href="mailto:kriengkrai.pho@gmail.com"><svg class="icon" aria-hidden="true"><use href="#i-mail"/></svg><span><small><span data-l="th">อีเมล</span><span data-l="en">Email</span></small><strong>kriengkrai.pho@gmail.com</strong></span></a>
     </div>
   </div>
 </section>
@@ -318,10 +342,36 @@ try { var t = localStorage.getItem("theme"); if (t === "light" || t === "dark") 
 
 <footer>
   <div class="wrap">
-    <span>© 2026 Kriengkrai Phongkitkarun</span>
-    <span>Icons by Remixicon · Hero image generated with AI</span>
+    <span><span data-l="th">© 2026 เกรียงไกร พงษ์กิจการุณ</span><span data-l="en">© 2026 Kriengkrai Phongkitkarun</span></span>
+    <span><span data-l="th">ไอคอนจาก Remixicon · ภาพหน้าแรกสร้างด้วย AI</span><span data-l="en">Icons by Remixicon · Hero image generated with AI</span></span>
   </div>
 </footer>
+
+<div class="flight" aria-hidden="true">
+  <svg class="trail" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <linearGradient id="trail-fade" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stop-color="#fff" stop-opacity="0"/>
+        <stop offset="0.75" stop-color="#fff" stop-opacity="0.9"/>
+        <stop offset="1" stop-color="#fff" stop-opacity="1"/>
+      </linearGradient>
+      <mask id="trail-mask" maskUnits="userSpaceOnUse" x="0" y="0" width="100%" height="100%">
+        <rect class="trail-window" x="0" y="0" width="100%" height="0" fill="url(#trail-fade)"/>
+      </mask>
+    </defs>
+    <path class="trail-path" d="" mask="url(#trail-mask)"/>
+  </svg>
+  <div class="plane">
+    <div class="plane-bob">
+      <svg class="plane-svg" viewBox="0 0 64 48" xmlns="http://www.w3.org/2000/svg">
+        <path class="pl-low" d="M62 23 L25 25.5 L7 45 Z"/>
+        <path class="pl-keel" d="M62 23 L25 25.5 L33 35 Z"/>
+        <path class="pl-up" d="M62 23 L2 3 L25 25.5 Z"/>
+        <path class="pl-crease" d="M62 23 L25 25.5 M62 23 L13 9.5"/>
+      </svg>
+    </div>
+  </div>
+</div>
 
 <script src="main.js" defer></script>
 </body>
